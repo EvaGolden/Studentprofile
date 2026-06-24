@@ -13,13 +13,13 @@
     <!-- Manifest injected by JavaScript -->
     <link rel="manifest" id="manifestLink" href="#" />
 
-    <!-- Service Worker (caches page + logo) -->
+    <!-- Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             const swCode = `
                 self.addEventListener('install', e => {
                     e.waitUntil(
-                        caches.open('studenthub-v3').then(cache => cache.addAll(['/', 'logo.png']))
+                        caches.open('studenthub-v5').then(cache => cache.addAll(['/', 'logo.png']))
                     );
                 });
                 self.addEventListener('fetch', e => {
@@ -35,7 +35,7 @@
                 .catch(err => console.warn('⚠️ SW registration failed:', err));
         }
 
-        // Inject manifest dynamically
+        // Inject manifest
         (function() {
             const manifest = {
                 name: "StudentHub",
@@ -59,12 +59,11 @@
         })();
     </script>
 
-    <!-- Font Awesome & Supabase -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* ----- Full CSS (mobile‑first) ----- */
+        /* ----- Full CSS (same as before) ----- */
         :root {
             --sidebar-width: 260px;
             --header-height: 56px;
@@ -123,7 +122,6 @@
         ::-webkit-scrollbar-track { background: var(--gray-100); }
         ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 4px; }
 
-        /* ----- Header ----- */
         .app-header {
             position: fixed;
             top: 0;
@@ -155,7 +153,6 @@
         .app-header .header-actions { display: flex; gap: 0.3rem; align-items: center; }
         .app-header .btn-sm { padding: 0.2rem 0.6rem; font-size: 0.75rem; }
 
-        /* ----- Sidebar ----- */
         .sidebar {
             width: var(--sidebar-width);
             background: var(--gray-900);
@@ -186,8 +183,7 @@
             margin-bottom: 0.1rem;
             font-size: 0.95rem;
         }
-        .sidebar-nav a:hover,
-        .sidebar-nav a.active {
+        .sidebar-nav a:hover, .sidebar-nav a.active {
             background: rgba(255,255,255,0.08);
             color: #fff;
         }
@@ -210,7 +206,6 @@
         }
         .sidebar-overlay.open { display: block; }
 
-        /* ----- Main Content ----- */
         .main {
             flex: 1;
             padding: 0.7rem 0.7rem 2rem;
@@ -241,7 +236,6 @@
         }
         .action-bar { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 
-        /* ----- Buttons ----- */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -268,7 +262,6 @@
         .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.7rem; }
         .btn-xs { padding: 0.1rem 0.4rem; font-size: 0.65rem; border-radius: 4px; }
 
-        /* ----- Stats Cards ----- */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -304,7 +297,6 @@
         .stat-card.orange { border-left-color: var(--warning); }
         .stat-card .sub { font-size: 0.6rem; color: var(--gray-400); }
 
-        /* ----- Toolbar ----- */
         .toolbar {
             display: flex;
             flex-wrap: wrap;
@@ -363,7 +355,6 @@
             font-size: 0.8rem;
         }
 
-        /* ----- Table ----- */
         .table-wrap {
             background: #fff;
             border-radius: var(--radius);
@@ -455,7 +446,6 @@
             display: block;
         }
 
-        /* ----- Pagination ----- */
         .pagination-wrap {
             display: flex;
             justify-content: space-between;
@@ -491,7 +481,6 @@
             cursor: not-allowed;
         }
 
-        /* ----- Modals ----- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -574,7 +563,6 @@
             font-size: 0.9rem;
         }
 
-        /* ----- Notifications ----- */
         .notif-container {
             position: fixed;
             top: calc(var(--header-height) + 0.5rem);
@@ -614,7 +602,6 @@
             padding: 0 0.2rem;
         }
 
-        /* ----- Responsive enhancements ----- */
         @media (min-width: 769px) {
             .sidebar { transform: translateX(0) !important; }
             .sidebar-overlay { display: none !important; }
@@ -646,12 +633,8 @@
 
     <!-- ===== HEADER ===== -->
     <header class="app-header">
-        <button class="hamburger" id="sidebarToggle" aria-label="Toggle sidebar">
-            <i class="fas fa-bars"></i>
-        </button>
-        <div class="brand">
-            <i class="fas fa-graduation-cap"></i> <span>Student</span>Hub
-        </div>
+        <button class="hamburger" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="brand"><i class="fas fa-graduation-cap"></i> <span>Student</span>Hub</div>
         <div class="header-actions">
             <button id="installBtn" style="display:none;" class="btn btn-success btn-sm">
                 <i class="fas fa-download"></i> <span>Install</span>
@@ -662,15 +645,9 @@
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar" id="sidebar">
         <nav class="sidebar-nav">
-            <a href="#" class="active" data-page="dashboard">
-                <span class="icon"><i class="fas fa-chart-pie"></i></span> Dashboard
-            </a>
-            <a href="#" data-page="students">
-                <span class="icon"><i class="fas fa-users"></i></span> Students
-            </a>
-            <a href="#" data-page="add">
-                <span class="icon"><i class="fas fa-plus-circle"></i></span> Add Student
-            </a>
+            <a href="#" class="active" data-page="dashboard"><span class="icon"><i class="fas fa-chart-pie"></i></span> Dashboard</a>
+            <a href="#" data-page="students"><span class="icon"><i class="fas fa-users"></i></span> Students</a>
+            <a href="#" data-page="add"><span class="icon"><i class="fas fa-plus-circle"></i></span> Add Student</a>
         </nav>
         <div class="sidebar-footer">v1.0 &bull; PWA</div>
     </aside>
@@ -678,46 +655,24 @@
 
     <!-- ===== MAIN CONTENT ===== -->
     <main class="main" id="mainContent">
-
-        <!-- Page Header -->
         <div class="page-header">
             <h1 id="pageTitle">Dashboard <small>overview</small></h1>
             <div class="action-bar">
-                <button class="btn btn-primary" id="btnAddStudent">
-                    <i class="fas fa-plus-circle"></i> <span>Add</span>
-                </button>
-                <button class="btn btn-outline" id="btnRefresh">
-                    <i class="fas fa-sync-alt"></i> <span>Refresh</span>
-                </button>
+                <button class="btn btn-primary" id="btnAddStudent"><i class="fas fa-plus-circle"></i> <span>Add</span></button>
+                <button class="btn btn-outline" id="btnRefresh"><i class="fas fa-sync-alt"></i> <span>Refresh</span></button>
             </div>
         </div>
 
-        <!-- Dashboard View -->
+        <!-- Dashboard -->
         <section id="viewDashboard">
             <div class="stats-grid">
-                <div class="stat-card blue">
-                    <div class="label"><i class="fas fa-user-graduate"></i> Total</div>
-                    <div class="value" id="statTotal">0</div>
-                </div>
-                <div class="stat-card green">
-                    <div class="label"><i class="fas fa-male"></i> Male</div>
-                    <div class="value" id="statMale">0</div>
-                </div>
-                <div class="stat-card purple">
-                    <div class="label"><i class="fas fa-female"></i> Female</div>
-                    <div class="value" id="statFemale">0</div>
-                </div>
-                <div class="stat-card orange">
-                    <div class="label"><i class="fas fa-calendar-plus"></i> Recent</div>
-                    <div class="value" id="statRecent">0</div>
-                    <div class="sub">last 7 days</div>
-                </div>
+                <div class="stat-card blue"><div class="label"><i class="fas fa-user-graduate"></i> Total</div><div class="value" id="statTotal">0</div></div>
+                <div class="stat-card green"><div class="label"><i class="fas fa-male"></i> Male</div><div class="value" id="statMale">0</div></div>
+                <div class="stat-card purple"><div class="label"><i class="fas fa-female"></i> Female</div><div class="value" id="statFemale">0</div></div>
+                <div class="stat-card orange"><div class="label"><i class="fas fa-calendar-plus"></i> Recent</div><div class="value" id="statRecent">0</div><div class="sub">last 7 days</div></div>
             </div>
-
             <div class="table-wrap">
-                <div style="padding:0.5rem 0.7rem 0;font-weight:600;color:var(--gray-700);font-size:0.8rem;">
-                    <i class="fas fa-clock"></i> Recent Students
-                </div>
+                <div style="padding:0.5rem 0.7rem 0;font-weight:600;color:var(--gray-700);font-size:0.8rem;"><i class="fas fa-clock"></i> Recent Students</div>
                 <div class="table-scroll">
                     <table>
                         <thead><tr><th>Student</th><th>Reg.</th><th>Dept</th><th>Email</th><th>Added</th></tr></thead>
@@ -729,7 +684,7 @@
             </div>
         </section>
 
-        <!-- Students View -->
+        <!-- Students -->
         <section id="viewStudents" style="display:none;">
             <div class="toolbar">
                 <div class="search-wrap">
@@ -738,20 +693,11 @@
                     <span class="clear-search" id="clearSearch"><i class="fas fa-times-circle"></i></span>
                 </div>
                 <div class="filter-group">
-                    <select id="filterGender">
-                        <option value="">All Genders</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                    <select id="filterDept">
-                        <option value="">All Departments</option>
-                    </select>
-                    <button class="btn btn-outline btn-sm" id="btnClearFilters">
-                        <i class="fas fa-times"></i> Clear
-                    </button>
+                    <select id="filterGender"><option value="">All Genders</option><option value="Male">Male</option><option value="Female">Female</option></select>
+                    <select id="filterDept"><option value="">All Departments</option></select>
+                    <button class="btn btn-outline btn-sm" id="btnClearFilters"><i class="fas fa-times"></i> Clear</button>
                 </div>
             </div>
-
             <div class="table-wrap">
                 <div class="table-scroll">
                     <table>
@@ -778,72 +724,30 @@
                 </div>
             </div>
         </section>
-
     </main>
 
     <!-- ===== MODALS ===== -->
-    <!-- Add/Edit Modal -->
+    <!-- Add/Edit -->
     <div class="modal-overlay" id="formModal">
         <div class="modal">
-            <div class="modal-header">
-                <h2 id="formModalTitle">Add Student</h2>
-                <button class="modal-close" id="formModalClose">&times;</button>
-            </div>
+            <div class="modal-header"><h2 id="formModalTitle">Add Student</h2><button class="modal-close" id="formModalClose">&times;</button></div>
             <form id="studentForm" enctype="multipart/form-data">
                 <input type="hidden" id="formId" value="" />
-
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="formFirstName">First Name *</label>
-                        <input type="text" id="formFirstName" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="formLastName">Last Name *</label>
-                        <input type="text" id="formLastName" required />
-                    </div>
+                    <div class="form-group"><label for="formFirstName">First Name *</label><input type="text" id="formFirstName" required /></div>
+                    <div class="form-group"><label for="formLastName">Last Name *</label><input type="text" id="formLastName" required /></div>
                 </div>
-
-                <div class="form-group">
-                    <label for="formRegNumber">Matric / Reg Number</label>
-                    <input type="text" id="formRegNumber" placeholder="e.g. 2023/12345" />
-                </div>
-
+                <div class="form-group"><label for="formRegNumber">Matric / Reg Number</label><input type="text" id="formRegNumber" placeholder="e.g. 2023/12345" /></div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="formGender">Gender *</label>
-                        <select id="formGender" required>
-                            <option value="">Select</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="formAge">Age *</label>
-                        <input type="number" id="formAge" required min="1" max="120" />
-                    </div>
+                    <div class="form-group"><label for="formGender">Gender *</label><select id="formGender" required><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
+                    <div class="form-group"><label for="formAge">Age *</label><input type="number" id="formAge" required min="1" max="120" /></div>
                 </div>
-
-                <div class="form-group">
-                    <label for="formDepartment">Department *</label>
-                    <input type="text" id="formDepartment" required placeholder="e.g. Computer Science" />
-                </div>
-
+                <div class="form-group"><label for="formDepartment">Department *</label><input type="text" id="formDepartment" required placeholder="e.g. Computer Science" /></div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="formEmail">Email *</label>
-                        <input type="email" id="formEmail" required placeholder="student@example.com" />
-                    </div>
-                    <div class="form-group">
-                        <label for="formPhone">Phone</label>
-                        <input type="text" id="formPhone" placeholder="+1234567890" />
-                    </div>
+                    <div class="form-group"><label for="formEmail">Email *</label><input type="email" id="formEmail" required placeholder="student@example.com" /></div>
+                    <div class="form-group"><label for="formPhone">Phone</label><input type="text" id="formPhone" placeholder="+1234567890" /></div>
                 </div>
-
-                <div class="form-group">
-                    <label for="formAddress">Address</label>
-                    <textarea id="formAddress" rows="2" placeholder="Street, City, State"></textarea>
-                </div>
-
+                <div class="form-group"><label for="formAddress">Address</label><textarea id="formAddress" rows="2" placeholder="Street, City, State"></textarea></div>
                 <div class="form-group">
                     <label>Profile Picture</label>
                     <div class="file-input-wrap">
@@ -851,18 +755,15 @@
                         <div id="formPicturePreview"></div>
                     </div>
                 </div>
-
                 <div class="form-actions">
                     <button type="button" class="btn btn-outline" id="formCancel">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="formSubmit">
-                        <i class="fas fa-save"></i> Save
-                    </button>
+                    <button type="submit" class="btn btn-primary" id="formSubmit"><i class="fas fa-save"></i> Save</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Delete Modal -->
+    <!-- Delete -->
     <div class="modal-overlay confirm" id="deleteModal">
         <div class="modal">
             <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
@@ -871,9 +772,7 @@
             <input type="hidden" id="deleteId" value="" />
             <div class="form-actions" style="justify-content:center;border:none;padding-top:0;">
                 <button class="btn btn-outline" id="deleteCancel">Cancel</button>
-                <button class="btn btn-danger" id="deleteConfirm">
-                    <i class="fas fa-trash-alt"></i> Delete
-                </button>
+                <button class="btn btn-danger" id="deleteConfirm"><i class="fas fa-trash-alt"></i> Delete</button>
             </div>
         </div>
     </div>
@@ -882,7 +781,7 @@
     <div class="notif-container" id="notifContainer"></div>
 
     <!-- ============================================================
-    JAVASCRIPT – Supabase Client (full)
+    JAVASCRIPT – Supabase Client (fixed search with reg_number)
     ============================================================ -->
     <script>
         (function() {
@@ -899,17 +798,15 @@
             console.log('🔗 Supabase client initialized:', supabaseUrl);
 
             // =============================================================
-            // INSTALL BUTTON LOGIC
+            // INSTALL BUTTON
             // =============================================================
             let deferredPrompt;
             const installBtn = document.getElementById('installBtn');
-
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
                 if (installBtn) installBtn.style.display = 'inline-flex';
             });
-
             if (installBtn) {
                 installBtn.addEventListener('click', async () => {
                     if (deferredPrompt) {
@@ -921,7 +818,6 @@
                     }
                 });
             }
-
             window.addEventListener('appinstalled', () => {
                 if (installBtn) installBtn.style.display = 'none';
             });
@@ -1043,7 +939,7 @@
             sidebarOverlay.addEventListener('click', closeSidebar);
 
             // =============================================================
-            // SEARCH CLEAR BUTTON
+            // SEARCH CLEAR
             // =============================================================
             searchInput.addEventListener('input', function() {
                 if (this.value.length > 0) {
@@ -1076,58 +972,72 @@
             }
 
             // =============================================================
-            // SUPABASE HELPERS (with reg_number)
+            // SUPABASE HELPERS – with reg_number search
             // =============================================================
+            // Build search string including reg_number
+            function buildSearchString(searchTerm) {
+                if (!searchTerm) return null;
+                const like = `%${searchTerm}%`;
+                // Include reg_number in search – the column must exist
+                const fields = ['first_name', 'last_name', 'email', 'department', 'reg_number'];
+                return fields.map(f => `${f}.ilike.${like}`).join(',');
+            }
+
             async function getStudents(params) {
                 let query = supabase
                     .from('students')
                     .select('*', { count: 'exact' });
 
+                // --- Search ---
                 if (params.search) {
-                    const like = `%${params.search}%`;
-                    // Try to search across columns; if reg_number doesn't exist, it will fail.
-                    // We'll catch and fallback to a simpler search.
-                    try {
-                        query = query.or(`first_name.ilike.${like},last_name.ilike.${like},email.ilike.${like},department.ilike.${like},reg_number.ilike.${like},id::text.ilike.${like}`);
-                    } catch (e) {
-                        // Fallback without reg_number
-                        query = query.or(`first_name.ilike.${like},last_name.ilike.${like},email.ilike.${like},department.ilike.${like},id::text.ilike.${like}`);
+                    const searchString = buildSearchString(params.search);
+                    if (searchString) {
+                        try {
+                            // Use or() with all fields including reg_number
+                            query = query.or(searchString);
+                        } catch (e) {
+                            console.warn('Search fallback triggered:', e);
+                            // Fallback: use individual ilike without reg_number
+                            const like = `%${params.search}%`;
+                            query = query
+                                .ilike('first_name', like)
+                                .ilike('last_name', like)
+                                .ilike('email', like)
+                                .ilike('department', like);
+                            // Optionally, if reg_number exists, we could add it separately
+                            // but we skip to avoid errors.
+                        }
                     }
                 }
-                if (params.gender) query = query.eq('gender', params.gender);
-                if (params.dept) query = query.eq('department', params.dept);
+
+                // --- Gender filter ---
+                if (params.gender) {
+                    query = query.eq('gender', params.gender);
+                }
+
+                // --- Department filter ---
+                if (params.dept) {
+                    query = query.eq('department', params.dept);
+                }
+
+                // --- Sorting ---
                 query = query.order(params.sort, { ascending: params.dir === 'asc' });
+
+                // --- Pagination ---
                 const from = (params.page - 1) * params.perPage;
                 const to = from + params.perPage - 1;
                 query = query.range(from, to);
 
                 const { data, count, error } = await query;
                 if (error) {
-                    // If error is about missing column, remove reg_number from search and retry
-                    if (error.message && error.message.includes('column "reg_number" does not exist')) {
-                        // Retry without reg_number
-                        let query2 = supabase
-                            .from('students')
-                            .select('*', { count: 'exact' });
-                        if (params.search) {
-                            const like = `%${params.search}%`;
-                            query2 = query2.or(`first_name.ilike.${like},last_name.ilike.${like},email.ilike.${like},department.ilike.${like},id::text.ilike.${like}`);
-                        }
-                        if (params.gender) query2 = query2.eq('gender', params.gender);
-                        if (params.dept) query2 = query2.eq('department', params.dept);
-                        query2 = query2.order(params.sort, { ascending: params.dir === 'asc' });
-                        const from2 = (params.page - 1) * params.perPage;
-                        const to2 = from2 + params.perPage - 1;
-                        query2 = query2.range(from2, to2);
-                        const { data: data2, count: count2, error: error2 } = await query2;
-                        if (error2) throw error2;
-                        return { data: data2, total: count2 };
-                    }
+                    console.error('Query error:', error);
                     throw error;
                 }
                 return { data, total: count };
             }
 
+            // ---- Rest of CRUD functions (identical to before) ----
+            // I'll include them again for completeness.
             async function getStats() {
                 const { count: total, error: e1 } = await supabase.from('students').select('*', { count: 'exact', head: true });
                 if (e1) throw e1;
