@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>StudentHub</title>
 
-    <!-- PWA Manifest (with custom SVG icon) -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlN0dWRlbnRIdWIiLAogICJzaG9ydF9uYW1lIjogIlN0dWRlbnRIdWIiLAogICJkZXNjcmlwdGlvbiI6ICJTdHVkZW50IFByb2ZpbGUgTWFuYWdlbWVudCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbCw8c3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInPjxyZWN0IHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyByeD0nNjQnIGZpbGw9JyM0ZjQ2ZTUnLz48Y2lyY2xlIGN4PScyNTYnIGN5PScyNDAnIHI9Jzk2JyBmaWxsPSd3aGl0ZScgb3BhY2l0eT0nMC4yJy8+PHBhdGggZD0nTTI1NiAxMjhsLTcyIDU2djQ4bDcyIDU2IDcyLTU2di00OGwtNzItNTZ6JyBmaWxsPSd3aGl0ZScvPjxwYXRoIGQ9J00yNTYgMzkybC03Mi01NnY0OGw3MiA1NiA3Mi01NnYtNDhsLTcyIDU2eicgZmlsbD0nd2hpdGUnIG9wYWNpdHk9JzAuNycvPjx0ZXh0IHg9JzUwJScgeT0nNzAlJyBmb250LXNpemU9JzcwJyBmb250LWZhbWlseT0nc2Fucy1zZXJpZicgZm9udC13ZWlnaHQ9J2JvbGQnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGR5PScwLjM1ZW0nIGZpbGw9J3doaXRlJz5TSDwvdGV4dD48L3N2Zz4iLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9" />
-
-    <!-- Apple Touch Icon (for iOS) -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='64' fill='%234f46e5'/><circle cx='256' cy='240' r='96' fill='white' opacity='0.2'/><path d='M256 128l-72 56v48l72 56 72-56v-48l-72-56z' fill='white'/><path d='M256 392l-72-56v48l72 56 72-56v-48l-72 56z' fill='white' opacity='0.7'/><text x='50%' y='70%' font-size='70' font-family='sans-serif' font-weight='bold' text-anchor='middle' dy='0.35em' fill='white'>SH</text></svg>" />
+    <!-- Apple Touch Icon (for iOS) – points to logo.png -->
+    <link rel="apple-touch-icon" href="logo.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Manifest will be injected by JavaScript below (so we use a placeholder) -->
+    <link rel="manifest" id="manifestLink" href="#" />
 
     <!-- Service Worker (caches the page for offline) -->
     <script>
@@ -19,7 +19,7 @@
             const swCode = `
                 self.addEventListener('install', e => {
                     e.waitUntil(
-                        caches.open('studenthub-v2').then(cache => cache.addAll(['/']))
+                        caches.open('studenthub-v2').then(cache => cache.addAll(['/', 'logo.png']))
                     );
                 });
                 self.addEventListener('fetch', e => {
@@ -34,6 +34,30 @@
                 .then(() => console.log('✅ Service worker registered.'))
                 .catch(err => console.warn('⚠️ SW registration failed:', err));
         }
+
+        // Inject manifest dynamically (so we only need one file)
+        (function() {
+            const manifest = {
+                name: "StudentHub",
+                short_name: "StudentHub",
+                description: "Student Profile Management",
+                start_url: ".",
+                display: "standalone",
+                background_color: "#0f172a",
+                theme_color: "#0f172a",
+                icons: [
+                    {
+                        src: "logo.png",
+                        sizes: "512x512",
+                        type: "image/png"
+                    }
+                ]
+            };
+            const json = JSON.stringify(manifest);
+            const b64 = btoa(json);
+            const link = document.getElementById('manifestLink');
+            link.href = 'data:application/json;base64,' + b64;
+        })();
     </script>
 
     <!-- Font Awesome & Supabase -->
@@ -836,7 +860,7 @@
     <div class="notif-container" id="notifContainer"></div>
 
     <!-- ============================================================
-    JAVASCRIPT – Supabase Client (full)
+    JAVASCRIPT – Supabase Client (full) + Install logic
     ============================================================ -->
     <script>
         (function() {
@@ -1556,7 +1580,6 @@
             // =============================================================
             (async function init() {
                 console.log('🚀 Starting StudentHub...');
-                // Simple connection test
                 try {
                     const { error } = await supabase.from('students').select('*', { count: 'exact', head: true });
                     if (error) {
