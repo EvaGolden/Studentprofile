@@ -19,7 +19,7 @@
             const swCode = `
                 self.addEventListener('install', e => {
                     e.waitUntil(
-                        caches.open('studenthub-v5').then(cache => cache.addAll(['/', 'logo.png']))
+                        caches.open('studenthub-v6').then(cache => cache.addAll(['/', 'logo.png']))
                     );
                 });
                 self.addEventListener('fetch', e => {
@@ -63,7 +63,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* ----- Full CSS (same as before) ----- */
+        /* ----- CSS (mobile‑first, same as before) ----- */
         :root {
             --sidebar-width: 260px;
             --header-height: 56px;
@@ -367,7 +367,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.8rem;
-            min-width: 640px;
+            min-width: 720px;
         }
         thead {
             background: var(--gray-50);
@@ -401,6 +401,7 @@
             vertical-align: middle;
         }
         tr:hover td { background: var(--gray-50); }
+        tr.clickable { cursor: pointer; }
         .avatar {
             width: 28px;
             height: 28px;
@@ -602,6 +603,18 @@
             padding: 0 0.2rem;
         }
 
+        /* About page */
+        .about-content {
+            background: #fff;
+            padding: 1.2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            line-height: 1.8;
+        }
+        .about-content h2 { margin-top: 0; color: var(--primary); }
+        .about-content .info-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 0.3rem 0.8rem; margin: 0.8rem 0; }
+        .about-content .info-grid .label { font-weight: 600; color: var(--gray-600); }
+
         @media (min-width: 769px) {
             .sidebar { transform: translateX(0) !important; }
             .sidebar-overlay { display: none !important; }
@@ -618,6 +631,7 @@
             .form-row { grid-template-columns: 1fr; }
             .stat-card .value { font-size: 1.2rem; }
             .app-header .brand { font-size: 1rem; }
+            .about-content .info-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 480px) {
             .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.4rem; }
@@ -648,6 +662,7 @@
             <a href="#" class="active" data-page="dashboard"><span class="icon"><i class="fas fa-chart-pie"></i></span> Dashboard</a>
             <a href="#" data-page="students"><span class="icon"><i class="fas fa-users"></i></span> Students</a>
             <a href="#" data-page="add"><span class="icon"><i class="fas fa-plus-circle"></i></span> Add Student</a>
+            <a href="#" data-page="about"><span class="icon"><i class="fas fa-info-circle"></i></span> About</a>
         </nav>
         <div class="sidebar-footer">v1.0 &bull; PWA</div>
     </aside>
@@ -675,9 +690,9 @@
                 <div style="padding:0.5rem 0.7rem 0;font-weight:600;color:var(--gray-700);font-size:0.8rem;"><i class="fas fa-clock"></i> Recent Students</div>
                 <div class="table-scroll">
                     <table>
-                        <thead><tr><th>Student</th><th>Reg.</th><th>Dept</th><th>Email</th><th>Added</th></tr></thead>
+                        <thead><tr><th>Student</th><th>Reg.</th><th>Level</th><th>Dept</th><th>Email</th><th>Added</th></tr></thead>
                         <tbody id="recentTableBody">
-                            <tr><td colspan="5" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No students yet</td></tr>
+                            <tr><td colspan="6" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No students yet</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -706,6 +721,7 @@
                                 <th>#</th><th>Photo</th>
                                 <th><button class="sort-btn" data-sort="first_name">Name ↕</button></th>
                                 <th><button class="sort-btn" data-sort="reg_number">Reg. ↕</button></th>
+                                <th><button class="sort-btn" data-sort="level">Level ↕</button></th>
                                 <th><button class="sort-btn" data-sort="gender">Gender ↕</button></th>
                                 <th><button class="sort-btn" data-sort="age">Age ↕</button></th>
                                 <th><button class="sort-btn" data-sort="department">Dept ↕</button></th>
@@ -714,7 +730,7 @@
                             </tr>
                         </thead>
                         <tbody id="studentTableBody">
-                            <tr><td colspan="10" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No students found</td></tr>
+                            <tr><td colspan="11" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No students found</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -724,10 +740,30 @@
                 </div>
             </div>
         </section>
+
+        <!-- About -->
+        <section id="viewAbout" style="display:none;">
+            <div class="about-content">
+                <h2><i class="fas fa-info-circle"></i> About StudentHub</h2>
+                <p>StudentHub is a mobile‑friendly Student Profile Management System built as a Progressive Web App (PWA).</p>
+                <div class="info-grid">
+                    <span class="label">Assignment</span><span>Web Application Development Project</span>
+                    <span class="label">Course</span><span>CSC 413</span>
+                    <span class="label">Developer</span><span>Urhi Abraham</span>
+                    <span class="label">Matric Number</span><span>FOS/22/23/291782</span>
+                    <span class="label">Department</span><span>Computer Science</span>
+                    <span class="label">Level</span><span>400lvl</span>
+                    <span class="label">Technologies Used</span><span>HTML, CSS, JavaScript, Supabase (PostgreSQL), Font Awesome</span>
+                    <span class="label">Features</span><span>CRUD operations, search, filters, sorting, pagination, profile pictures, PWA installable</span>
+                    <span class="label">Year</span><span>2026</span>
+                </div>
+                <p style="margin-top:0.8rem;color:var(--gray-500);font-size:0.9rem;"><i class="fas fa-code"></i> Built with for academic purposes.</p>
+            </div>
+        </section>
     </main>
 
     <!-- ===== MODALS ===== -->
-    <!-- Add/Edit -->
+    <!-- Add/Edit Modal -->
     <div class="modal-overlay" id="formModal">
         <div class="modal">
             <div class="modal-header"><h2 id="formModalTitle">Add Student</h2><button class="modal-close" id="formModalClose">&times;</button></div>
@@ -738,6 +774,7 @@
                     <div class="form-group"><label for="formLastName">Last Name *</label><input type="text" id="formLastName" required /></div>
                 </div>
                 <div class="form-group"><label for="formRegNumber">Matric / Reg Number</label><input type="text" id="formRegNumber" placeholder="e.g. 2023/12345" /></div>
+                <div class="form-group"><label for="formLevel">Level</label><input type="text" id="formLevel" placeholder="e.g. 100, 200, 300" /></div>
                 <div class="form-row">
                     <div class="form-group"><label for="formGender">Gender *</label><select id="formGender" required><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
                     <div class="form-group"><label for="formAge">Age *</label><input type="number" id="formAge" required min="1" max="120" /></div>
@@ -763,7 +800,23 @@
         </div>
     </div>
 
-    <!-- Delete -->
+    <!-- Profile Detail Modal -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="profileModalTitle">Student Profile</h2>
+                <button class="modal-close" id="profileModalClose">&times;</button>
+            </div>
+            <div id="profileContent" style="padding:0.2rem 0;">
+                <!-- populated by JS -->
+            </div>
+            <div class="form-actions" style="border-top:none;padding-top:0;justify-content:center;">
+                <button class="btn btn-outline" id="profileModalCloseBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
     <div class="modal-overlay confirm" id="deleteModal">
         <div class="modal">
             <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
@@ -781,7 +834,7 @@
     <div class="notif-container" id="notifContainer"></div>
 
     <!-- ============================================================
-    JAVASCRIPT – Supabase Client (fixed search with reg_number)
+    JAVASCRIPT – Supabase Client
     ============================================================ -->
     <script>
         (function() {
@@ -853,6 +906,7 @@
 
             const viewDashboard = $('#viewDashboard');
             const viewStudents = $('#viewStudents');
+            const viewAbout = $('#viewAbout');
 
             const statTotal = $('#statTotal');
             const statMale = $('#statMale');
@@ -880,6 +934,7 @@
             const formFirstName = $('#formFirstName');
             const formLastName = $('#formLastName');
             const formRegNumber = $('#formRegNumber');
+            const formLevel = $('#formLevel');
             const formGender = $('#formGender');
             const formAge = $('#formAge');
             const formDepartment = $('#formDepartment');
@@ -890,6 +945,12 @@
             const formPicturePreview = $('#formPicturePreview');
             const formCancel = $('#formCancel');
             const formSubmit = $('#formSubmit');
+
+            const profileModal = $('#profileModal');
+            const profileModalTitle = $('#profileModalTitle');
+            const profileContent = $('#profileContent');
+            const profileModalClose = $('#profileModalClose');
+            const profileModalCloseBtn = $('#profileModalCloseBtn');
 
             const deleteModal = $('#deleteModal');
             const deleteId = $('#deleteId');
@@ -907,15 +968,22 @@
                 if (page === 'dashboard') {
                     viewDashboard.style.display = 'block';
                     viewStudents.style.display = 'none';
+                    viewAbout.style.display = 'none';
                     pageTitle.innerHTML = 'Dashboard <small>overview</small>';
                     loadDashboard();
                 } else if (page === 'students') {
                     viewDashboard.style.display = 'none';
                     viewStudents.style.display = 'block';
+                    viewAbout.style.display = 'none';
                     pageTitle.innerHTML = 'Students <small>manage all records</small>';
                     loadStudents();
                 } else if (page === 'add') {
                     openFormModal();
+                } else if (page === 'about') {
+                    viewDashboard.style.display = 'none';
+                    viewStudents.style.display = 'none';
+                    viewAbout.style.display = 'block';
+                    pageTitle.innerHTML = 'About <small>assignment info</small>';
                 }
                 closeSidebar();
             }
@@ -972,14 +1040,53 @@
             }
 
             // =============================================================
-            // SUPABASE HELPERS – with reg_number search
+            // PROFILE DETAIL MODAL
             // =============================================================
-            // Build search string including reg_number
+            function showProfile(student) {
+                profileModalTitle.textContent = `${student.first_name} ${student.last_name}`;
+                const avatar = student.profile_picture ?
+                    `<img src="${escapeHtml(student.profile_picture)}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 0.8rem;" />` :
+                    `<div style="width:80px;height:80px;border-radius:50%;background:var(--primary-light);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;margin:0 auto 0.8rem;text-transform:uppercase;">${escapeHtml(student.first_name.charAt(0))}${escapeHtml(student.last_name.charAt(0))}</div>`;
+                const fields = [
+                    { label: 'Full Name', value: `${student.first_name} ${student.last_name}` },
+                    { label: 'Registration Number', value: student.reg_number || '—' },
+                    { label: 'Level', value: student.level || '—' },
+                    { label: 'Gender', value: student.gender || '—' },
+                    { label: 'Age', value: student.age || '—' },
+                    { label: 'Department', value: student.department || '—' },
+                    { label: 'Email', value: student.email || '—' },
+                    { label: 'Phone', value: student.phone || '—' },
+                    { label: 'Address', value: student.address || '—' },
+                    { label: 'Added', value: formatDate(student.created_at) },
+                ];
+                let html = avatar;
+                fields.forEach(f => {
+                    html += `<div style="display:flex;padding:0.2rem 0;border-bottom:1px solid var(--gray-100);">
+                                <span style="font-weight:600;width:140px;flex-shrink:0;color:var(--gray-600);">${f.label}</span>
+                                <span style="flex:1;">${escapeHtml(f.value)}</span>
+                             </div>`;
+                });
+                profileContent.innerHTML = html;
+                profileModal.classList.add('open');
+            }
+
+            function closeProfileModal() {
+                profileModal.classList.remove('open');
+            }
+            profileModalClose.addEventListener('click', closeProfileModal);
+            profileModalCloseBtn.addEventListener('click', closeProfileModal);
+            profileModal.addEventListener('click', (e) => {
+                if (e.target === profileModal) closeProfileModal();
+            });
+
+            // =============================================================
+            // SUPABASE HELPERS – FIXED SEARCH
+            // =============================================================
             function buildSearchString(searchTerm) {
                 if (!searchTerm) return null;
                 const like = `%${searchTerm}%`;
-                // Include reg_number in search – the column must exist
-                const fields = ['first_name', 'last_name', 'email', 'department', 'reg_number'];
+                // Use all relevant columns – no spaces after commas!
+                const fields = ['first_name', 'last_name', 'email', 'department', 'reg_number', 'level'];
                 return fields.map(f => `${f}.ilike.${like}`).join(',');
             }
 
@@ -993,37 +1100,24 @@
                     const searchString = buildSearchString(params.search);
                     if (searchString) {
                         try {
-                            // Use or() with all fields including reg_number
+                            // Use or() with the clean string (no spaces)
                             query = query.or(searchString);
                         } catch (e) {
-                            console.warn('Search fallback triggered:', e);
-                            // Fallback: use individual ilike without reg_number
+                            console.warn('Search or() failed, falling back to individual ilike:', e);
                             const like = `%${params.search}%`;
                             query = query
                                 .ilike('first_name', like)
                                 .ilike('last_name', like)
                                 .ilike('email', like)
                                 .ilike('department', like);
-                            // Optionally, if reg_number exists, we could add it separately
-                            // but we skip to avoid errors.
                         }
                     }
                 }
 
-                // --- Gender filter ---
-                if (params.gender) {
-                    query = query.eq('gender', params.gender);
-                }
+                if (params.gender) query = query.eq('gender', params.gender);
+                if (params.dept) query = query.eq('department', params.dept);
 
-                // --- Department filter ---
-                if (params.dept) {
-                    query = query.eq('department', params.dept);
-                }
-
-                // --- Sorting ---
                 query = query.order(params.sort, { ascending: params.dir === 'asc' });
-
-                // --- Pagination ---
                 const from = (params.page - 1) * params.perPage;
                 const to = from + params.perPage - 1;
                 query = query.range(from, to);
@@ -1036,8 +1130,7 @@
                 return { data, total: count };
             }
 
-            // ---- Rest of CRUD functions (identical to before) ----
-            // I'll include them again for completeness.
+            // ---- Other CRUD functions (identical, but with 'level' added) ----
             async function getStats() {
                 const { count: total, error: e1 } = await supabase.from('students').select('*', { count: 'exact', head: true });
                 if (e1) throw e1;
@@ -1080,17 +1173,11 @@
                 const fileExt = file.name.split('.').pop();
                 const fileName = `profile_${Date.now()}.${fileExt}`;
                 console.log(`📤 Uploading ${fileName} to bucket "${STORAGE_BUCKET}"...`);
-
                 try {
                     const { error: uploadError } = await supabase.storage
                         .from(STORAGE_BUCKET)
                         .upload(fileName, file, { cacheControl: '3600', upsert: false });
-
-                    if (uploadError) {
-                        console.error('❌ Upload error:', uploadError);
-                        throw new Error('Upload failed: ' + uploadError.message);
-                    }
-
+                    if (uploadError) throw new Error('Upload failed: ' + uploadError.message);
                     const { data: { publicUrl } } = supabase.storage
                         .from(STORAGE_BUCKET)
                         .getPublicUrl(fileName);
@@ -1105,13 +1192,13 @@
             async function createStudent(student, file) {
                 let pictureUrl = null;
                 if (file) pictureUrl = await uploadPicture(file);
-
                 const { data, error } = await supabase
                     .from('students')
                     .insert([{
                         first_name: student.first_name,
                         last_name: student.last_name,
                         reg_number: student.reg_number,
+                        level: student.level,
                         gender: student.gender,
                         age: student.age,
                         department: student.department,
@@ -1129,13 +1216,13 @@
             async function updateStudent(id, student, file) {
                 let pictureUrl = student.profile_picture;
                 if (file) pictureUrl = await uploadPicture(file);
-
                 const { data, error } = await supabase
                     .from('students')
                     .update({
                         first_name: student.first_name,
                         last_name: student.last_name,
                         reg_number: student.reg_number,
+                        level: student.level,
                         gender: student.gender,
                         age: student.age,
                         department: student.department,
@@ -1186,13 +1273,14 @@
                             <tr>
                                 <td><strong>${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}</strong></td>
                                 <td>${escapeHtml(s.reg_number || '—')}</td>
+                                <td>${escapeHtml(s.level || '—')}</td>
                                 <td>${escapeHtml(s.department)}</td>
                                 <td>${escapeHtml(s.email)}</td>
                                 <td>${formatDate(s.created_at)}</td>
                             </tr>
                         `).join('');
                     } else {
-                        recentTableBody.innerHTML = `<tr><td colspan="5" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No recent students</td></tr>`;
+                        recentTableBody.innerHTML = `<tr><td colspan="6" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No recent students</td></tr>`;
                     }
                 } catch (e) {
                     notify('Failed to load dashboard: ' + e.message, 'error');
@@ -1233,7 +1321,7 @@
 
             function renderTable() {
                 if (!state.students || !state.students.length) {
-                    studentTableBody.innerHTML = `<tr><td colspan="10" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No students found</td></tr>`;
+                    studentTableBody.innerHTML = `<tr><td colspan="11" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No students found</td></tr>`;
                     return;
                 }
                 studentTableBody.innerHTML = state.students.map((s, i) => {
@@ -1243,11 +1331,12 @@
                         `<div class="avatar-placeholder">${escapeHtml(s.first_name.charAt(0))}${escapeHtml(s.last_name.charAt(0))}</div>`;
                     const genderBadge = `<span class="badge ${(s.gender || '').toLowerCase()}">${escapeHtml(s.gender)}</span>`;
                     return `
-                        <tr>
+                        <tr class="clickable" data-id="${s.id}">
                             <td>${idx}</td>
                             <td>${avatar}</td>
                             <td><strong>${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}</strong></td>
                             <td>${escapeHtml(s.reg_number || '—')}</td>
+                            <td>${escapeHtml(s.level || '—')}</td>
                             <td>${genderBadge}</td>
                             <td>${s.age}</td>
                             <td>${escapeHtml(s.department)}</td>
@@ -1255,13 +1344,22 @@
                             <td>${escapeHtml(s.phone || '—')}</td>
                             <td>
                                 <div class="actions">
-                                    <button class="btn btn-primary btn-xs" onclick="window.editStudent(${s.id})"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-danger btn-xs" onclick="window.confirmDelete(${s.id}, '${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}')"><i class="fas fa-trash-alt"></i></button>
+                                    <button class="btn btn-primary btn-xs" onclick="event.stopPropagation();window.editStudent(${s.id})"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-danger btn-xs" onclick="event.stopPropagation();window.confirmDelete(${s.id}, '${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}')"><i class="fas fa-trash-alt"></i></button>
                                 </div>
                             </td>
                         </tr>
                     `;
                 }).join('');
+
+                // Add click handler for row to show profile
+                document.querySelectorAll('#studentTableBody tr.clickable').forEach(row => {
+                    row.addEventListener('click', function() {
+                        const id = parseInt(this.dataset.id);
+                        const student = state.students.find(s => s.id === id);
+                        if (student) showProfile(student);
+                    });
+                });
             }
 
             function renderPagination() {
@@ -1363,6 +1461,7 @@
                     formFirstName.value = data.first_name;
                     formLastName.value = data.last_name;
                     formRegNumber.value = data.reg_number || '';
+                    formLevel.value = data.level || '';
                     formGender.value = data.gender || '';
                     formAge.value = data.age || '';
                     formDepartment.value = data.department || '';
@@ -1419,6 +1518,7 @@
                 const fn = formFirstName.value.trim();
                 const ln = formLastName.value.trim();
                 const reg = formRegNumber.value.trim();
+                const level = formLevel.value.trim();
                 const gender = formGender.value;
                 const age = parseInt(formAge.value);
                 const dept = formDepartment.value.trim();
@@ -1441,6 +1541,7 @@
                     first_name: fn,
                     last_name: ln,
                     reg_number: reg,
+                    level: level,
                     gender,
                     age,
                     department: dept,
@@ -1583,6 +1684,7 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     closeFormModal();
+                    closeProfileModal();
                     deleteModal.classList.remove('open');
                 }
             });
