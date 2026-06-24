@@ -17,17 +17,17 @@
     <script>
         if ('serviceWorker' in navigator) {
             const swCode = `
-                self.addEventListener('install', e => {
-                    e.waitUntil(
-                        caches.open('studenthub-v6').then(cache => cache.addAll(['/', 'logo.png']))
-                    );
-                });
-                self.addEventListener('fetch', e => {
-                    e.respondWith(
-                        caches.match(e.request).then(r => r || fetch(e.request))
-                    );
-                });
-            `;
+                    self.addEventListener('install', e => {
+                        e.waitUntil(
+                            caches.open('studenthub-v6').then(cache => cache.addAll(['/', 'logo.png']))
+                        );
+                    });
+                    self.addEventListener('fetch', e => {
+                        e.respondWith(
+                            caches.match(e.request).then(r => r || fetch(e.request))
+                        );
+                    });
+                `;
             const blob = new Blob([swCode], { type: 'application/javascript' });
             const swUrl = URL.createObjectURL(blob);
             navigator.serviceWorker.register(swUrl)
@@ -46,11 +46,7 @@
                 background_color: "#0f172a",
                 theme_color: "#0f172a",
                 icons: [
-                    {
-                        src: "logo.png",
-                        sizes: "512x512",
-                        type: "image/png"
-                    }
+                    { src: "logo.png", sizes: "512x512", type: "image/png" }
                 ]
             };
             const json = JSON.stringify(manifest);
@@ -60,157 +56,271 @@
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
 
     <style>
-        /* ----- CSS (mobile‑first, same as before) ----- */
+        /* ----- CSS — BOTTOM NAV (WhatsApp-style) ----- */
         :root {
-            --sidebar-width: 260px;
-            --header-height: 56px;
-            --primary: #4f46e5;
-            --primary-dark: #4338ca;
-            --primary-light: #818cf8;
-            --danger: #ef4444;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1e293b;
-            --gray-900: #0f172a;
-            --shadow: 0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
-            --radius: 12px;
-            --radius-sm: 8px;
-            --transition: 0.25s ease;
+            --primary: #6C63FF;
+            --primary-dark: #5a52d5;
+            --primary-light: #8b84ff;
+            --primary-glow: rgba(108, 99, 255, 0.25);
+            --danger: #ff6b6b;
+            --success: #2ecc71;
+            --warning: #f9ca24;
+            --bg: #f4f6fb;
+            --surface: #ffffff;
+            --surface-alt: #f8f9fe;
+            --text: #1a1a2e;
+            --text-secondary: #6c6f8a;
+            --text-muted: #a0a3bd;
+            --border: #e8ecf4;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-full: 50px;
+            --header-height: 60px;
+            --bottom-nav-height: 68px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
-            background: var(--gray-100);
-            color: var(--gray-800);
+            font-family: -apple-system, 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             display: flex;
+            flex-direction: column;
             min-height: 100vh;
             padding-top: var(--header-height);
+            padding-bottom: calc(var(--bottom-nav-height) + var(--safe-bottom));
             font-size: 16px;
             line-height: 1.5;
             -webkit-text-size-adjust: 100%;
+            overflow-x: hidden;
         }
-        a { text-decoration: none; color: inherit; }
-        button { cursor: pointer; font: inherit; border: none; background: none; }
-        input, select, textarea {
-            font: inherit; outline: none; border: 1px solid var(--gray-300);
-            border-radius: var(--radius-sm); padding: 0.5rem 0.7rem; width: 100%;
-            background: #fff; transition: border var(--transition);
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font: inherit;
+            border: none;
+            background: none;
+        }
+        input,
+        select,
+        textarea {
+            font: inherit;
+            outline: none;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.6rem 0.8rem;
+            width: 100%;
+            background: var(--surface);
+            transition: border var(--transition), box-shadow var(--transition);
             font-size: 0.9rem;
+            color: var(--text);
         }
-        input:focus, select:focus, textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+            box-shadow: 0 0 0 4px var(--primary-glow);
         }
-        textarea { resize: vertical; min-height: 60px; }
-        label { font-weight: 600; font-size: 0.85rem; color: var(--gray-700); display: block; margin-bottom: 0.2rem; }
-        .form-group { margin-bottom: 0.8rem; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.3px;
+        }
+        .form-group {
+            margin-bottom: 0.9rem;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
 
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: var(--gray-100); }
-        ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 4px; }
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
 
+        /* ----- HEADER ----- */
         .app-header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             height: var(--header-height);
-            background: var(--gray-900);
-            color: #fff;
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            padding: 0 0.7rem;
+            padding: 0 1.2rem;
             z-index: 150;
-            box-shadow: var(--shadow-lg);
-        }
-        .app-header .hamburger {
-            font-size: 1.3rem;
-            padding: 0.2rem 0.5rem 0.2rem 0;
-            color: #fff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
         }
         .app-header .brand {
-            font-size: 1.1rem;
-            font-weight: 700;
+            font-size: 1.15rem;
+            font-weight: 800;
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.5rem;
             flex: 1;
+            color: var(--text);
         }
-        .app-header .brand span { color: var(--primary-light); }
-        .app-header .header-actions { display: flex; gap: 0.3rem; align-items: center; }
-        .app-header .btn-sm { padding: 0.2rem 0.6rem; font-size: 0.75rem; }
+        .app-header .brand i {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+        .app-header .brand span {
+            color: var(--primary);
+        }
+        .app-header .header-actions {
+            display: flex;
+            gap: 0.3rem;
+            align-items: center;
+        }
+        .app-header .btn-sm {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.7rem;
+            border-radius: var(--radius-full);
+        }
 
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--gray-900);
-            color: #fff;
-            height: calc(100vh - var(--header-height));
+        /* ----- BOTTOM NAV (WhatsApp-style) ----- */
+        .bottom-nav {
             position: fixed;
-            top: var(--header-height);
+            bottom: 0;
             left: 0;
-            z-index: 100;
-            padding: 1rem 0.7rem;
+            right: 0;
+            height: calc(var(--bottom-nav-height) + var(--safe-bottom));
+            padding-bottom: var(--safe-bottom);
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 150;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
+        }
+        .bottom-nav .nav-item {
             display: flex;
             flex-direction: column;
-            transition: transform var(--transition);
-            overflow-y: auto;
-            transform: translateX(-100%);
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            padding: 4px 12px;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition);
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            font-weight: 600;
+            min-width: 56px;
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
         }
-        .sidebar.open { transform: translateX(0); }
-        .sidebar-nav { flex: 1; }
-        .sidebar-nav a {
+        .bottom-nav .nav-item i {
+            font-size: 1.4rem;
+            transition: all var(--transition);
+        }
+        .bottom-nav .nav-item span {
+            font-size: 0.55rem;
+            letter-spacing: 0.2px;
+            opacity: 0.8;
+        }
+        .bottom-nav .nav-item.active {
+            color: var(--primary);
+        }
+        .bottom-nav .nav-item.active i {
+            transform: scale(1.05);
+        }
+        .bottom-nav .nav-item .badge-dot {
+            position: absolute;
+            top: 2px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            border: 2px solid var(--surface);
+        }
+        .bottom-nav .nav-item .nav-ripple {
+            position: absolute;
+            inset: 2px 8px;
+            border-radius: var(--radius-sm);
+            background: var(--primary-glow);
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .bottom-nav .nav-item:active .nav-ripple {
+            opacity: 0.3;
+        }
+
+        /* ----- FAB (Floating Action Button) ----- */
+        .fab {
+            position: fixed;
+            bottom: calc(var(--bottom-nav-height) + var(--safe-bottom) + 20px);
+            right: 20px;
+            z-index: 130;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            font-size: 1.6rem;
             display: flex;
             align-items: center;
-            gap: 0.7rem;
-            padding: 0.6rem 0.7rem;
-            border-radius: var(--radius-sm);
-            color: var(--gray-300);
+            justify-content: center;
+            box-shadow: 0 8px 28px rgba(108, 99, 255, 0.4);
             transition: all var(--transition);
-            font-weight: 500;
-            margin-bottom: 0.1rem;
-            font-size: 0.95rem;
+            border: none;
         }
-        .sidebar-nav a:hover, .sidebar-nav a.active {
-            background: rgba(255,255,255,0.08);
-            color: #fff;
+        .fab:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 36px rgba(108, 99, 255, 0.5);
         }
-        .sidebar-nav a.active { background: var(--primary); }
-        .sidebar-nav .icon { font-size: 1.1rem; width: 1.6rem; text-align: center; }
-        .sidebar-footer {
-            border-top: 1px solid rgba(255,255,255,0.08);
-            padding-top: 0.8rem;
-            font-size: 0.7rem;
-            color: var(--gray-400);
-            text-align: center;
+        .fab:active {
+            transform: scale(0.92);
         }
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            top: var(--header-height);
-            background: rgba(0,0,0,0.35);
-            z-index: 90;
-        }
-        .sidebar-overlay.open { display: block; }
 
+        /* ----- MAIN CONTENT ----- */
         .main {
             flex: 1;
-            padding: 0.7rem 0.7rem 2rem;
-            min-height: calc(100vh - var(--header-height));
-            overflow-x: hidden;
+            padding: 0.8rem 1rem 1.2rem;
+            max-width: 820px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .page-header {
@@ -219,93 +329,165 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 0.5rem;
-            margin-bottom: 0.8rem;
-            padding-bottom: 0.3rem;
-            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 1.2rem;
         }
         .page-header h1 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--gray-900);
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text);
         }
         .page-header h1 small {
             font-weight: 400;
-            font-size: 0.7rem;
-            color: var(--gray-500);
-            margin-left: 0.2rem;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-left: 0.3rem;
+            display: inline-block;
         }
-        .action-bar { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+        .page-header .action-bar {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
 
+        /* ----- BUTTONS ----- */
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.3rem;
-            padding: 0.35rem 0.8rem;
-            border-radius: var(--radius-sm);
+            gap: 0.4rem;
+            padding: 0.4rem 1rem;
+            border-radius: var(--radius-full);
             font-weight: 600;
             font-size: 0.8rem;
             transition: all var(--transition);
-            border: 1px solid transparent;
-            background: var(--gray-200);
-            color: var(--gray-700);
+            border: 1.5px solid transparent;
+            background: var(--bg);
+            color: var(--text-secondary);
             white-space: nowrap;
         }
-        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
-        .btn-primary { background: var(--primary); color: #fff; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-danger { background: var(--danger); color: #fff; }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-success { background: var(--success); color: #fff; }
-        .btn-success:hover { background: #16a34a; }
-        .btn-outline { background: transparent; border-color: var(--gray-300); color: var(--gray-600); }
-        .btn-outline:hover { background: var(--gray-100); }
-        .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.7rem; }
-        .btn-xs { padding: 0.1rem 0.4rem; font-size: 0.65rem; border-radius: 4px; }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+        .btn:active {
+            transform: scale(0.96);
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+        .btn-danger:hover {
+            background: #e55a5a;
+            border-color: #e55a5a;
+        }
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+            border-color: var(--success);
+        }
+        .btn-success:hover {
+            background: #27ae60;
+            border-color: #27ae60;
+        }
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text-secondary);
+        }
+        .btn-outline:hover {
+            background: var(--bg);
+            border-color: var(--text-muted);
+        }
+        .btn-sm {
+            padding: 0.25rem 0.7rem;
+            font-size: 0.7rem;
+        }
+        .btn-xs {
+            padding: 0.1rem 0.5rem;
+            font-size: 0.6rem;
+            border-radius: 6px;
+        }
 
+        /* ----- STATS CARDS (modern) ----- */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.6rem;
-            margin-bottom: 1rem;
+            gap: 0.7rem;
+            margin-bottom: 1.2rem;
         }
         .stat-card {
-            background: #fff;
-            padding: 0.6rem 0.8rem;
+            background: var(--surface);
+            padding: 0.8rem 1rem;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            border-left: 4px solid var(--primary);
+            border: 1px solid var(--border);
+            transition: all var(--transition);
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
         .stat-card .label {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--gray-500);
-            font-weight: 600;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 0.2rem;
+            gap: 0.4rem;
+        }
+        .stat-card .label i {
+            font-size: 0.7rem;
+            color: var(--primary);
         }
         .stat-card .value {
-            font-size: 1.4rem;
-            font-weight: 700;
+            font-size: 1.5rem;
+            font-weight: 800;
             margin-top: 0.1rem;
-            color: var(--gray-900);
+            color: var(--text);
         }
-        .stat-card.green { border-left-color: var(--success); }
-        .stat-card.blue { border-left-color: var(--primary); }
-        .stat-card.purple { border-left-color: #8b5cf6; }
-        .stat-card.orange { border-left-color: var(--warning); }
-        .stat-card .sub { font-size: 0.6rem; color: var(--gray-400); }
+        .stat-card .sub {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            margin-top: 0.1rem;
+        }
+        .stat-card .stat-icon {
+            float: right;
+            font-size: 1.6rem;
+            opacity: 0.15;
+            color: var(--primary);
+        }
+        .stat-card.green .stat-icon {
+            color: var(--success);
+        }
+        .stat-card.purple .stat-icon {
+            color: #a29bfe;
+        }
+        .stat-card.orange .stat-icon {
+            color: var(--warning);
+        }
 
+        /* ----- TOOLBAR (search + filters) ----- */
         .toolbar {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
             align-items: center;
-            background: #fff;
-            padding: 0.5rem 0.7rem;
+            background: var(--surface);
+            padding: 0.6rem 0.9rem;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
+            border: 1px solid var(--border);
             margin-bottom: 1rem;
         }
         .toolbar .search-wrap {
@@ -314,32 +496,39 @@
             position: relative;
         }
         .toolbar .search-wrap input {
-            padding-left: 2rem;
-            padding-right: 2rem;
-            border-radius: 20px;
-            border-color: var(--gray-200);
+            padding-left: 2.4rem;
+            padding-right: 2.4rem;
+            border-radius: var(--radius-full);
+            border-color: var(--border);
             font-size: 0.85rem;
+            background: var(--bg);
+            height: 40px;
+        }
+        .toolbar .search-wrap input:focus {
+            background: var(--surface);
         }
         .toolbar .search-wrap .search-icon {
             position: absolute;
-            left: 0.6rem;
+            left: 0.8rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--gray-400);
+            color: var(--text-muted);
             font-size: 0.85rem;
         }
         .toolbar .search-wrap .clear-search {
             position: absolute;
-            right: 0.6rem;
+            right: 0.8rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--gray-400);
+            color: var(--text-muted);
             font-size: 0.85rem;
             cursor: pointer;
             display: none;
             padding: 0 0.2rem;
         }
-        .toolbar .search-wrap .clear-search.visible { display: block; }
+        .toolbar .search-wrap .clear-search.visible {
+            display: block;
+        }
         .toolbar .filter-group {
             display: flex;
             gap: 0.3rem;
@@ -349,128 +538,176 @@
         .toolbar .filter-group select {
             width: auto;
             min-width: 80px;
-            padding: 0.25rem 0.5rem;
-            border-radius: 20px;
-            border-color: var(--gray-200);
-            font-size: 0.8rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: var(--radius-full);
+            border-color: var(--border);
+            font-size: 0.75rem;
+            background: var(--bg);
+            height: 40px;
+            color: var(--text);
         }
 
-        .table-wrap {
-            background: #fff;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            overflow: hidden;
+        /* ----- STUDENT CARDS (instead of table) ----- */
+        .student-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
             margin-bottom: 0.8rem;
         }
-        .table-scroll { overflow-x: auto; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8rem;
-            min-width: 720px;
-        }
-        thead {
-            background: var(--gray-50);
-            border-bottom: 2px solid var(--gray-200);
-        }
-        th {
-            text-align: left;
-            padding: 0.4rem 0.5rem;
-            font-weight: 600;
-            color: var(--gray-600);
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-        }
-        th .sort-btn {
-            background: none;
-            border: none;
-            font-weight: 600;
-            color: var(--gray-600);
+        .student-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            padding: 0.9rem 1rem;
+            transition: all var(--transition);
             cursor: pointer;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 0.2rem;
-            font-size: 0.65rem;
+            gap: 0.9rem;
         }
-        th .sort-btn:hover { color: var(--gray-900); }
-        td {
-            padding: 0.35rem 0.5rem;
-            border-bottom: 1px solid var(--gray-100);
-            vertical-align: middle;
+        .student-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
         }
-        tr:hover td { background: var(--gray-50); }
-        tr.clickable { cursor: pointer; }
-        .avatar {
-            width: 28px;
-            height: 28px;
+        .student-card:active {
+            transform: scale(0.99);
+        }
+        .student-card .avatar-wrap {
+            flex-shrink: 0;
+            position: relative;
+        }
+        .student-card .avatar {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             object-fit: cover;
-            background: var(--gray-200);
+            background: var(--bg);
+            border: 2px solid var(--border);
             display: block;
         }
-        .avatar-placeholder {
-            width: 28px;
-            height: 28px;
+        .student-card .avatar-placeholder {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            background: var(--primary-light);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 0.6rem;
+            font-size: 1rem;
             text-transform: uppercase;
+            border: 2px solid var(--border);
         }
-        .badge {
-            display: inline-block;
-            padding: 0.1rem 0.4rem;
-            border-radius: 20px;
-            font-size: 0.6rem;
+        .student-card .info {
+            flex: 1;
+            min-width: 0;
+        }
+        .student-card .info .name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+        .student-card .info .name .badge {
+            font-size: 0.55rem;
+            padding: 0.1rem 0.5rem;
+            border-radius: var(--radius-full);
             font-weight: 600;
-            background: var(--gray-200);
-            color: var(--gray-700);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
-        .badge.male { background: #dbeafe; color: #1d4ed8; }
-        .badge.female { background: #fce7f3; color: #be185d; }
-        .actions { display: flex; gap: 0.2rem; flex-wrap: wrap; }
+        .student-card .info .name .badge.male {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        .student-card .info .name .badge.female {
+            background: #fce7f3;
+            color: #be185d;
+        }
+        .student-card .info .details {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem 0.8rem;
+        }
+        .student-card .info .details span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+        .student-card .info .details i {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+        .student-card .actions {
+            display: flex;
+            gap: 0.3rem;
+            flex-shrink: 0;
+            align-self: flex-start;
+            margin-top: 0.2rem;
+        }
+        .student-card .actions .btn {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.65rem;
+            border-radius: 8px;
+        }
 
         .empty-state {
             text-align: center;
-            padding: 1.5rem 0.5rem;
-            color: var(--gray-500);
+            padding: 2.5rem 0.5rem;
+            color: var(--text-muted);
         }
         .empty-state .icon {
-            font-size: 2rem;
-            margin-bottom: 0.2rem;
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
             display: block;
+            opacity: 0.4;
         }
 
+        /* ----- PAGINATION ----- */
         .pagination-wrap {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 0.4rem;
-            padding: 0.4rem 0.7rem;
-            border-top: 1px solid var(--gray-200);
+            padding: 0.6rem 0.2rem;
+            margin-top: 0.2rem;
         }
-        .pagination-wrap .info { font-size: 0.7rem; color: var(--gray-500); }
-        .pagination { display: flex; gap: 0.2rem; flex-wrap: wrap; }
+        .pagination-wrap .info {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .pagination {
+            display: flex;
+            gap: 0.2rem;
+            flex-wrap: wrap;
+        }
         .pagination button {
-            padding: 0.15rem 0.5rem;
+            padding: 0.2rem 0.6rem;
             border-radius: var(--radius-sm);
-            border: 1px solid var(--gray-200);
-            background: #fff;
-            font-weight: 500;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            font-weight: 600;
             font-size: 0.7rem;
             transition: all var(--transition);
+            color: var(--text-secondary);
+            min-width: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .pagination button:hover:not(:disabled) {
-            background: var(--primary);
-            color: #fff;
-            border-color: var(--primary);
+        .pagination button:hover:not(:disabled):not(.active) {
+            background: var(--bg);
+            border-color: var(--text-muted);
         }
         .pagination button.active {
             background: var(--primary);
@@ -478,79 +715,107 @@
             border-color: var(--primary);
         }
         .pagination button:disabled {
-            opacity: 0.4;
+            opacity: 0.3;
             cursor: not-allowed;
         }
 
+        /* ----- MODALS ----- */
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             z-index: 200;
             align-items: center;
             justify-content: center;
-            padding: 0.5rem;
-            backdrop-filter: blur(3px);
+            padding: 1rem;
+            animation: fadeIn 0.25s ease;
         }
-        .modal-overlay.open { display: flex; }
+        .modal-overlay.open {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
         .modal {
-            background: #fff;
+            background: var(--surface);
             border-radius: var(--radius);
-            max-width: 560px;
+            max-width: 520px;
             width: 100%;
-            max-height: 90vh;
+            max-height: 92vh;
             overflow-y: auto;
-            padding: 1rem 1rem 1.2rem;
+            padding: 1.2rem 1.4rem 1.4rem;
             box-shadow: var(--shadow-lg);
-            animation: modalIn .25s ease;
+            animation: slideUp 0.3s ease;
         }
-        @keyframes modalIn {
-            from { transform: scale(0.95) translateY(20px); opacity: 0; }
-            to { transform: scale(1) translateY(0); opacity: 1; }
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px) scale(0.97);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
         }
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.8rem;
+            margin-bottom: 1rem;
         }
-        .modal-header h2 { font-size: 1rem; font-weight: 700; }
+        .modal-header h2 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text);
+        }
         .modal-close {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             line-height: 1;
-            color: var(--gray-400);
+            color: var(--text-muted);
             transition: color var(--transition);
             padding: 0 0.2rem;
         }
-        .modal-close:hover { color: var(--gray-800); }
+        .modal-close:hover {
+            color: var(--text);
+        }
         .modal .form-actions {
             display: flex;
             gap: 0.5rem;
             justify-content: flex-end;
-            margin-top: 1rem;
+            margin-top: 1.2rem;
             padding-top: 0.8rem;
-            border-top: 1px solid var(--gray-200);
+            border-top: 1px solid var(--border);
         }
         .modal .form-group .file-input-wrap {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
             flex-wrap: wrap;
         }
         .modal .form-group .file-input-wrap input[type="file"] {
             width: auto;
-            padding: 0.2rem;
+            padding: 0.2rem 0.4rem;
+            border: none;
+            background: transparent;
+            font-size: 0.8rem;
         }
         .modal .preview-img {
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--gray-200);
+            border: 2px solid var(--border);
         }
         .modal.confirm .modal {
-            max-width: 380px;
+            max-width: 360px;
             text-align: center;
         }
         .modal.confirm .modal .confirm-icon {
@@ -559,87 +824,258 @@
             margin-bottom: 0.3rem;
         }
         .modal.confirm .modal p {
-            color: var(--gray-500);
+            color: var(--text-secondary);
             margin-bottom: 0.8rem;
             font-size: 0.9rem;
         }
 
+        /* ----- PROFILE MODAL ----- */
+        #profileContent .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 0.8rem;
+            border: 3px solid var(--border);
+        }
+        #profileContent .profile-avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 auto 0.8rem;
+            text-transform: uppercase;
+            border: 3px solid var(--border);
+        }
+        #profileContent .field-row {
+            display: flex;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        #profileContent .field-row .field-label {
+            font-weight: 600;
+            width: 120px;
+            flex-shrink: 0;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        #profileContent .field-row .field-value {
+            flex: 1;
+            font-size: 0.85rem;
+            color: var(--text);
+            word-break: break-word;
+        }
+
+        /* ----- NOTIFICATIONS ----- */
         .notif-container {
             position: fixed;
-            top: calc(var(--header-height) + 0.5rem);
-            right: 0.5rem;
+            top: calc(var(--header-height) + 0.6rem);
+            right: 0.6rem;
             z-index: 300;
             display: flex;
             flex-direction: column;
             gap: 0.4rem;
-            max-width: 280px;
+            max-width: 300px;
             width: 100%;
+            pointer-events: none;
         }
         .notif {
-            padding: 0.4rem 0.7rem;
+            pointer-events: auto;
+            padding: 0.5rem 0.9rem;
             border-radius: var(--radius-sm);
-            background: #fff;
+            background: var(--surface);
             box-shadow: var(--shadow-lg);
             border-left: 4px solid var(--primary);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            animation: slideIn .3s ease;
+            gap: 0.6rem;
             font-weight: 500;
             font-size: 0.8rem;
+            animation: slideInRight 0.35s ease;
+            color: var(--text);
+            border: 1px solid var(--border);
         }
-        .notif.success { border-left-color: var(--success); }
-        .notif.error { border-left-color: var(--danger); }
-        .notif.warning { border-left-color: var(--warning); }
-        @keyframes slideIn {
-            from { transform: translateX(40px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        .notif.success {
+            border-left-color: var(--success);
+        }
+        .notif.error {
+            border-left-color: var(--danger);
+        }
+        .notif.warning {
+            border-left-color: var(--warning);
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
         .notif .notif-close {
             margin-left: auto;
-            font-size: 1rem;
-            color: var(--gray-400);
+            font-size: 1.1rem;
+            color: var(--text-muted);
             cursor: pointer;
             padding: 0 0.2rem;
         }
 
-        /* About page */
+        /* ----- ABOUT ----- */
         .about-content {
-            background: #fff;
-            padding: 1.2rem;
+            background: var(--surface);
+            padding: 1.4rem 1.6rem;
             border-radius: var(--radius);
+            border: 1px solid var(--border);
             box-shadow: var(--shadow);
             line-height: 1.8;
         }
-        .about-content h2 { margin-top: 0; color: var(--primary); }
-        .about-content .info-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 0.3rem 0.8rem; margin: 0.8rem 0; }
-        .about-content .info-grid .label { font-weight: 600; color: var(--gray-600); }
+        .about-content h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-weight: 800;
+        }
+        .about-content .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 0.2rem 1rem;
+            margin: 0.8rem 0;
+        }
+        .about-content .info-grid .label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        .about-content .info-grid .value {
+            font-size: 0.85rem;
+        }
 
-        @media (min-width: 769px) {
-            .sidebar { transform: translateX(0) !important; }
-            .sidebar-overlay { display: none !important; }
-            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+        /* ----- RESPONSIVE ----- */
+        @media (min-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .student-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
-        @media (max-width: 768px) {
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .page-header h1 { font-size: 1rem; }
-            .page-header h1 small { font-size: 0.6rem; }
-            .toolbar .search-wrap { min-width: 100px; }
-            .toolbar .filter-group select { min-width: 60px; font-size: 0.7rem; }
-            .btn { font-size: 0.7rem; padding: 0.25rem 0.6rem; }
-            .modal { padding: 0.8rem; }
-            .form-row { grid-template-columns: 1fr; }
-            .stat-card .value { font-size: 1.2rem; }
-            .app-header .brand { font-size: 1rem; }
-            .about-content .info-grid { grid-template-columns: 1fr; }
-        }
+
         @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.4rem; }
-            .stat-card { padding: 0.4rem 0.6rem; }
-            .stat-card .value { font-size: 1rem; }
-            .toolbar { flex-direction: column; align-items: stretch; }
-            .toolbar .filter-group { flex-wrap: wrap; }
-            .action-bar .btn span { display: none; }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+            .stat-card {
+                padding: 0.6rem 0.8rem;
+            }
+            .stat-card .value {
+                font-size: 1.2rem;
+            }
+            .page-header h1 {
+                font-size: 1rem;
+            }
+            .page-header h1 small {
+                font-size: 0.55rem;
+                display: block;
+                margin-left: 0;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0.6rem;
+            }
+            .toolbar .filter-group {
+                flex-wrap: wrap;
+            }
+            .toolbar .filter-group select {
+                flex: 1;
+                min-width: 60px;
+            }
+            .student-card {
+                padding: 0.7rem;
+                gap: 0.6rem;
+            }
+            .student-card .avatar,
+            .student-card .avatar-placeholder {
+                width: 40px;
+                height: 40px;
+                font-size: 0.8rem;
+            }
+            .student-card .info .name {
+                font-size: 0.85rem;
+            }
+            .student-card .info .details {
+                font-size: 0.65rem;
+                gap: 0.2rem 0.5rem;
+            }
+            .fab {
+                width: 48px;
+                height: 48px;
+                font-size: 1.3rem;
+                bottom: calc(var(--bottom-nav-height) + var(--safe-bottom) + 16px);
+                right: 16px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .modal {
+                padding: 0.9rem 1rem 1.2rem;
+                margin: 0.5rem;
+            }
+            .about-content .info-grid {
+                grid-template-columns: 1fr;
+                gap: 0.1rem 0;
+            }
+            .bottom-nav .nav-item {
+                padding: 2px 6px;
+                min-width: 44px;
+            }
+            .bottom-nav .nav-item i {
+                font-size: 1.2rem;
+            }
+            .bottom-nav .nav-item span {
+                font-size: 0.5rem;
+            }
+            #profileContent .field-row {
+                flex-wrap: wrap;
+            }
+            #profileContent .field-row .field-label {
+                width: 100%;
+                font-size: 0.7rem;
+            }
+            #profileContent .field-row .field-value {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.4rem;
+            }
+            .stat-card .value {
+                font-size: 1rem;
+            }
+            .stat-card .label {
+                font-size: 0.5rem;
+            }
+            .btn {
+                font-size: 0.65rem;
+                padding: 0.2rem 0.6rem;
+            }
+        }
+
+        /* Utility to hide/show views */
+        .view-hidden {
+            display: none !important;
         }
     </style>
 </head>
@@ -647,8 +1083,10 @@
 
     <!-- ===== HEADER ===== -->
     <header class="app-header">
-        <button class="hamburger" id="sidebarToggle"><i class="fas fa-bars"></i></button>
-        <div class="brand"><i class="fas fa-graduation-cap"></i> <span>Student</span>Hub</div>
+        <div class="brand">
+            <i class="fas fa-graduation-cap"></i>
+            <span>Student</span>Hub
+        </div>
         <div class="header-actions">
             <button id="installBtn" style="display:none;" class="btn btn-success btn-sm">
                 <i class="fas fa-download"></i> <span>Install</span>
@@ -656,55 +1094,65 @@
         </div>
     </header>
 
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="sidebar" id="sidebar">
-        <nav class="sidebar-nav">
-            <a href="#" class="active" data-page="dashboard"><span class="icon"><i class="fas fa-chart-pie"></i></span> Dashboard</a>
-            <a href="#" data-page="students"><span class="icon"><i class="fas fa-users"></i></span> Students</a>
-            <a href="#" data-page="add"><span class="icon"><i class="fas fa-plus-circle"></i></span> Add Student</a>
-            <a href="#" data-page="about"><span class="icon"><i class="fas fa-info-circle"></i></span> About</a>
-        </nav>
-        <div class="sidebar-footer">v1.0 &bull; PWA</div>
-    </aside>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
     <!-- ===== MAIN CONTENT ===== -->
     <main class="main" id="mainContent">
-        <div class="page-header">
-            <h1 id="pageTitle">Dashboard <small>overview</small></h1>
-            <div class="action-bar">
-                <button class="btn btn-primary" id="btnAddStudent"><i class="fas fa-plus-circle"></i> <span>Add</span></button>
-                <button class="btn btn-outline" id="btnRefresh"><i class="fas fa-sync-alt"></i> <span>Refresh</span></button>
-            </div>
-        </div>
 
-        <!-- Dashboard -->
+        <!-- ---- DASHBOARD ---- -->
         <section id="viewDashboard">
-            <div class="stats-grid">
-                <div class="stat-card blue"><div class="label"><i class="fas fa-user-graduate"></i> Total</div><div class="value" id="statTotal">0</div></div>
-                <div class="stat-card green"><div class="label"><i class="fas fa-male"></i> Male</div><div class="value" id="statMale">0</div></div>
-                <div class="stat-card purple"><div class="label"><i class="fas fa-female"></i> Female</div><div class="value" id="statFemale">0</div></div>
-                <div class="stat-card orange"><div class="label"><i class="fas fa-calendar-plus"></i> Recent</div><div class="value" id="statRecent">0</div><div class="sub">last 7 days</div></div>
+            <div class="page-header">
+                <h1>Dashboard <small>overview</small></h1>
+                <div class="action-bar">
+                    <button class="btn btn-outline btn-sm" id="btnRefresh"><i class="fas fa-sync-alt"></i> <span>Refresh</span></button>
+                </div>
             </div>
-            <div class="table-wrap">
-                <div style="padding:0.5rem 0.7rem 0;font-weight:600;color:var(--gray-700);font-size:0.8rem;"><i class="fas fa-clock"></i> Recent Students</div>
-                <div class="table-scroll">
-                    <table>
-                        <thead><tr><th>Student</th><th>Reg.</th><th>Level</th><th>Dept</th><th>Email</th><th>Added</th></tr></thead>
-                        <tbody id="recentTableBody">
-                            <tr><td colspan="6" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No students yet</td></tr>
-                        </tbody>
-                    </table>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="label"><i class="fas fa-user-graduate"></i> Total</div>
+                    <div class="value" id="statTotal">0</div>
+                    <span class="stat-icon"><i class="fas fa-users"></i></span>
+                </div>
+                <div class="stat-card green">
+                    <div class="label"><i class="fas fa-male"></i> Male</div>
+                    <div class="value" id="statMale">0</div>
+                    <span class="stat-icon"><i class="fas fa-male"></i></span>
+                </div>
+                <div class="stat-card purple">
+                    <div class="label"><i class="fas fa-female"></i> Female</div>
+                    <div class="value" id="statFemale">0</div>
+                    <span class="stat-icon"><i class="fas fa-female"></i></span>
+                </div>
+                <div class="stat-card orange">
+                    <div class="label"><i class="fas fa-calendar-plus"></i> Recent</div>
+                    <div class="value" id="statRecent">0</div>
+                    <div class="sub">last 7 days</div>
+                    <span class="stat-icon"><i class="fas fa-clock"></i></span>
+                </div>
+            </div>
+
+            <div style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:0.8rem 0;">
+                <div style="padding:0 1rem 0.6rem;font-weight:700;color:var(--text-secondary);font-size:0.75rem;letter-spacing:0.5px;text-transform:uppercase;display:flex;align-items:center;gap:0.5rem;">
+                    <i class="fas fa-clock" style="color:var(--primary);"></i> Recent Students
+                </div>
+                <div id="recentContainer">
+                    <div class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No students yet</div>
                 </div>
             </div>
         </section>
 
-        <!-- Students -->
+        <!-- ---- STUDENTS ---- -->
         <section id="viewStudents" style="display:none;">
+            <div class="page-header">
+                <h1>Students <small>manage all records</small></h1>
+                <div class="action-bar">
+                    <button class="btn btn-primary btn-sm" id="btnAddStudent"><i class="fas fa-plus-circle"></i> <span>Add</span></button>
+                </div>
+            </div>
+
             <div class="toolbar">
                 <div class="search-wrap">
                     <span class="search-icon"><i class="fas fa-search"></i></span>
-                    <input type="text" id="searchInput" placeholder="Search..." />
+                    <input type="text" id="searchInput" placeholder="Search students..." />
                     <span class="clear-search" id="clearSearch"><i class="fas fa-times-circle"></i></span>
                 </div>
                 <div class="filter-group">
@@ -713,60 +1161,73 @@
                     <button class="btn btn-outline btn-sm" id="btnClearFilters"><i class="fas fa-times"></i> Clear</button>
                 </div>
             </div>
-            <div class="table-wrap">
-                <div class="table-scroll">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th><th>Photo</th>
-                                <th><button class="sort-btn" data-sort="first_name">Name ↕</button></th>
-                                <th><button class="sort-btn" data-sort="reg_number">Reg. ↕</button></th>
-                                <th><button class="sort-btn" data-sort="level">Level ↕</button></th>
-                                <th><button class="sort-btn" data-sort="gender">Gender ↕</button></th>
-                                <th><button class="sort-btn" data-sort="age">Age ↕</button></th>
-                                <th><button class="sort-btn" data-sort="department">Dept ↕</button></th>
-                                <th>Email</th><th>Phone</th>
-                                <th style="min-width:70px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="studentTableBody">
-                            <tr><td colspan="11" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No students found</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="pagination-wrap">
-                    <span class="info" id="paginationInfo">Showing 0 of 0</span>
-                    <div class="pagination" id="paginationControls"></div>
-                </div>
+
+            <div class="student-grid" id="studentGrid">
+                <div class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No students found</div>
+            </div>
+
+            <div class="pagination-wrap">
+                <span class="info" id="paginationInfo">Showing 0 of 0</span>
+                <div class="pagination" id="paginationControls"></div>
             </div>
         </section>
 
-        <!-- About -->
+        <!-- ---- ABOUT ---- -->
         <section id="viewAbout" style="display:none;">
+            <div class="page-header">
+                <h1>About <small>assignment info</small></h1>
+            </div>
             <div class="about-content">
-                <h2><i class="fas fa-info-circle"></i> About StudentHub</h2>
+                <h2><i class="fas fa-info-circle" style="color:var(--primary);"></i> About StudentHub</h2>
                 <p>StudentHub is a mobile‑friendly Student Profile Management System built as a Progressive Web App (PWA).</p>
                 <div class="info-grid">
-                    <span class="label">Assignment</span><span>Web Application Development Project</span>
-                    <span class="label">Course</span><span>CSC 413</span>
-                    <span class="label">Developer</span><span>Urhi Abraham</span>
-                    <span class="label">Matric Number</span><span>FOS/22/23/291782</span>
-                    <span class="label">Department</span><span>Computer Science</span>
-                    <span class="label">Level</span><span>400lvl</span>
-                    <span class="label">Technologies Used</span><span>HTML, CSS, JavaScript, Supabase (PostgreSQL), Font Awesome</span>
-                    <span class="label">Features</span><span>CRUD operations, search, filters, sorting, pagination, profile pictures, PWA installable</span>
-                    <span class="label">Year</span><span>2026</span>
+                    <span class="label">Assignment</span><span class="value">Web Application Development Project</span>
+                    <span class="label">Course</span><span class="value">CSC 413</span>
+                    <span class="label">Developer</span><span class="value">Urhi Abraham</span>
+                    <span class="label">Matric Number</span><span class="value">FOS/22/23/291782</span>
+                    <span class="label">Department</span><span class="value">Computer Science</span>
+                    <span class="label">Level</span><span class="value">400lvl</span>
+                    <span class="label">Technologies</span><span class="value">HTML, CSS, JavaScript, Supabase, Font Awesome</span>
+                    <span class="label">Features</span><span class="value">CRUD, search, filters, sorting, pagination, profile pics, PWA</span>
+                    <span class="label">Year</span><span class="value">2026</span>
                 </div>
-                <p style="margin-top:0.8rem;color:var(--gray-500);font-size:0.9rem;"><i class="fas fa-code"></i> Built with for academic purposes.</p>
+                <p style="margin-top:0.8rem;color:var(--text-muted);font-size:0.85rem;"><i class="fas fa-code"></i> Built for academic purposes.</p>
             </div>
         </section>
     </main>
+
+    <!-- ===== FAB ===== -->
+    <button class="fab" id="fabAdd" aria-label="Add Student">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- ===== BOTTOM NAV (WhatsApp-style) ===== -->
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" data-page="dashboard">
+            <span class="nav-ripple"></span>
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="students">
+            <span class="nav-ripple"></span>
+            <i class="fas fa-users"></i>
+            <span>Students</span>
+        </button>
+        <button class="nav-item" data-page="about">
+            <span class="nav-ripple"></span>
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </button>
+    </nav>
 
     <!-- ===== MODALS ===== -->
     <!-- Add/Edit Modal -->
     <div class="modal-overlay" id="formModal">
         <div class="modal">
-            <div class="modal-header"><h2 id="formModalTitle">Add Student</h2><button class="modal-close" id="formModalClose">&times;</button></div>
+            <div class="modal-header">
+                <h2 id="formModalTitle">Add Student</h2>
+                <button class="modal-close" id="formModalClose">&times;</button>
+            </div>
             <form id="studentForm" enctype="multipart/form-data">
                 <input type="hidden" id="formId" value="" />
                 <div class="form-row">
@@ -807,9 +1268,7 @@
                 <h2 id="profileModalTitle">Student Profile</h2>
                 <button class="modal-close" id="profileModalClose">&times;</button>
             </div>
-            <div id="profileContent" style="padding:0.2rem 0;">
-                <!-- populated by JS -->
-            </div>
+            <div id="profileContent" style="padding:0.2rem 0;"></div>
             <div class="form-actions" style="border-top:none;padding-top:0;justify-content:center;">
                 <button class="btn btn-outline" id="profileModalCloseBtn">Close</button>
             </div>
@@ -820,7 +1279,7 @@
     <div class="modal-overlay confirm" id="deleteModal">
         <div class="modal">
             <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
-            <h2>Delete Student?</h2>
+            <h2 style="font-weight:800;">Delete Student?</h2>
             <p id="deleteMessage">Are you sure? This cannot be undone.</p>
             <input type="hidden" id="deleteId" value="" />
             <div class="form-actions" style="justify-content:center;border:none;padding-top:0;">
@@ -834,21 +1293,21 @@
     <div class="notif-container" id="notifContainer"></div>
 
     <!-- ============================================================
-    JAVASCRIPT – Supabase Client
+    JAVASCRIPT – Supabase Client (fully preserved)
     ============================================================ -->
     <script>
         (function() {
             'use strict';
 
             // =============================================================
-            // 🔑 REPLACE WITH YOUR SUPABASE ANON KEY
+            // 🔑 SUPABASE CONFIG
             // =============================================================
             const supabaseUrl = "https://ccpmvihscnxmujrqziud.supabase.co";
             const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjcG12aWhzY254bXVqcnF6aXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMDkzODEsImV4cCI6MjA5Nzg4NTM4MX0.YuVyCRl9a1MDK0Xc2ZTXnDDuLJnXYz7x8n7zTTtoMqw";
             const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
             const STORAGE_BUCKET = 'Student-profiles';
 
-            console.log('🔗 Supabase client initialized:', supabaseUrl);
+            console.log('🔗 Supabase client initialized');
 
             // =============================================================
             // INSTALL BUTTON
@@ -899,11 +1358,7 @@
             const $ = (s) => document.querySelector(s);
             const $$ = (s) => document.querySelectorAll(s);
 
-            const sidebar = $('#sidebar');
-            const sidebarToggle = $('#sidebarToggle');
-            const sidebarOverlay = $('#sidebarOverlay');
             const pageTitle = $('#pageTitle');
-
             const viewDashboard = $('#viewDashboard');
             const viewStudents = $('#viewStudents');
             const viewAbout = $('#viewAbout');
@@ -912,9 +1367,9 @@
             const statMale = $('#statMale');
             const statFemale = $('#statFemale');
             const statRecent = $('#statRecent');
-            const recentTableBody = $('#recentTableBody');
+            const recentContainer = $('#recentContainer');
 
-            const studentTableBody = $('#studentTableBody');
+            const studentGrid = $('#studentGrid');
             const searchInput = $('#searchInput');
             const clearSearch = $('#clearSearch');
             const filterGender = $('#filterGender');
@@ -924,6 +1379,7 @@
             const paginationControls = $('#paginationControls');
 
             const btnAddStudent = $('#btnAddStudent');
+            const fabAdd = $('#fabAdd');
             const btnRefresh = $('#btnRefresh');
 
             const formModal = $('#formModal');
@@ -959,62 +1415,48 @@
             const deleteConfirm = $('#deleteConfirm');
 
             const notifContainer = $('#notifContainer');
+            const bottomNav = $('#bottomNav');
 
             // =============================================================
-            // SIDEBAR NAV
+            // BOTTOM NAVIGATION
             // =============================================================
             function navigateTo(page) {
-                $$('.sidebar-nav a').forEach(a => a.classList.toggle('active', a.dataset.page === page));
-                if (page === 'dashboard') {
-                    viewDashboard.style.display = 'block';
-                    viewStudents.style.display = 'none';
-                    viewAbout.style.display = 'none';
-                    pageTitle.innerHTML = 'Dashboard <small>overview</small>';
-                    loadDashboard();
-                } else if (page === 'students') {
-                    viewDashboard.style.display = 'none';
-                    viewStudents.style.display = 'block';
-                    viewAbout.style.display = 'none';
-                    pageTitle.innerHTML = 'Students <small>manage all records</small>';
-                    loadStudents();
-                } else if (page === 'add') {
-                    openFormModal();
-                } else if (page === 'about') {
-                    viewDashboard.style.display = 'none';
-                    viewStudents.style.display = 'none';
-                    viewAbout.style.display = 'block';
-                    pageTitle.innerHTML = 'About <small>assignment info</small>';
-                }
-                closeSidebar();
-            }
-
-            $$('.sidebar-nav a').forEach(a => {
-                a.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    navigateTo(a.dataset.page);
+                // Update nav items
+                bottomNav.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.toggle('active', item.dataset.page === page);
                 });
-            });
 
-            sidebarToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-                sidebarOverlay.classList.toggle('open');
-            });
+                // Show/hide views
+                viewDashboard.style.display = page === 'dashboard' ? 'block' : 'none';
+                viewStudents.style.display = page === 'students' ? 'block' : 'none';
+                viewAbout.style.display = page === 'about' ? 'block' : 'none';
 
-            function closeSidebar() {
-                sidebar.classList.remove('open');
-                sidebarOverlay.classList.remove('open');
+                // Update page title
+                const titles = {
+                    dashboard: 'Dashboard <small>overview</small>',
+                    students: 'Students <small>manage all records</small>',
+                    about: 'About <small>assignment info</small>'
+                };
+                document.querySelector('.page-header h1').innerHTML = titles[page] || 'StudentHub';
+
+                // Load data
+                if (page === 'dashboard') loadDashboard();
+                else if (page === 'students') loadStudents();
             }
-            sidebarOverlay.addEventListener('click', closeSidebar);
+
+            bottomNav.addEventListener('click', (e) => {
+                const item = e.target.closest('.nav-item');
+                if (!item) return;
+                const page = item.dataset.page;
+                if (page) navigateTo(page);
+            });
 
             // =============================================================
             // SEARCH CLEAR
             // =============================================================
             searchInput.addEventListener('input', function() {
-                if (this.value.length > 0) {
-                    clearSearch.classList.add('visible');
-                } else {
-                    clearSearch.classList.remove('visible');
-                }
+                this.value.length > 0 ? clearSearch.classList.add('visible') : clearSearch.classList.remove(
+                'visible');
             });
 
             clearSearch.addEventListener('click', function() {
@@ -1032,7 +1474,8 @@
             function notify(message, type = 'success') {
                 const el = document.createElement('div');
                 el.className = `notif ${type}`;
-                el.innerHTML = `<span>${message}</span><span class="notif-close">&times;</span>`;
+                el.innerHTML =
+                    `<span>${message}</span><span class="notif-close">&times;</span>`;
                 notifContainer.prepend(el);
                 el.querySelector('.notif-close').addEventListener('click', () => el.remove());
                 setTimeout(() => { if (el.parentNode) el.remove(); }, 5000);
@@ -1045,8 +1488,9 @@
             function showProfile(student) {
                 profileModalTitle.textContent = `${student.first_name} ${student.last_name}`;
                 const avatar = student.profile_picture ?
-                    `<img src="${escapeHtml(student.profile_picture)}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 0.8rem;" />` :
-                    `<div style="width:80px;height:80px;border-radius:50%;background:var(--primary-light);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;margin:0 auto 0.8rem;text-transform:uppercase;">${escapeHtml(student.first_name.charAt(0))}${escapeHtml(student.last_name.charAt(0))}</div>`;
+                    `<img src="${escapeHtml(student.profile_picture)}" class="profile-avatar" />` :
+                    `<div class="profile-avatar-placeholder">${escapeHtml(student.first_name.charAt(0))}${escapeHtml(student.last_name.charAt(0))}</div>`;
+
                 const fields = [
                     { label: 'Full Name', value: `${student.first_name} ${student.last_name}` },
                     { label: 'Registration Number', value: student.reg_number || '—' },
@@ -1061,9 +1505,9 @@
                 ];
                 let html = avatar;
                 fields.forEach(f => {
-                    html += `<div style="display:flex;padding:0.2rem 0;border-bottom:1px solid var(--gray-100);">
-                                <span style="font-weight:600;width:140px;flex-shrink:0;color:var(--gray-600);">${f.label}</span>
-                                <span style="flex:1;">${escapeHtml(f.value)}</span>
+                    html += `<div class="field-row">
+                                <span class="field-label">${f.label}</span>
+                                <span class="field-value">${escapeHtml(f.value)}</span>
                              </div>`;
                 });
                 profileContent.innerHTML = html;
@@ -1080,12 +1524,11 @@
             });
 
             // =============================================================
-            // SUPABASE HELPERS – FIXED SEARCH
+            // SUPABASE HELPERS (unchanged)
             // =============================================================
             function buildSearchString(searchTerm) {
                 if (!searchTerm) return null;
                 const like = `%${searchTerm}%`;
-                // Use all relevant columns – no spaces after commas!
                 const fields = ['first_name', 'last_name', 'email', 'department', 'reg_number', 'level'];
                 return fields.map(f => `${f}.ilike.${like}`).join(',');
             }
@@ -1095,15 +1538,13 @@
                     .from('students')
                     .select('*', { count: 'exact' });
 
-                // --- Search ---
                 if (params.search) {
                     const searchString = buildSearchString(params.search);
                     if (searchString) {
                         try {
-                            // Use or() with the clean string (no spaces)
                             query = query.or(searchString);
                         } catch (e) {
-                            console.warn('Search or() failed, falling back to individual ilike:', e);
+                            console.warn('Search or() failed, falling back:', e);
                             const like = `%${params.search}%`;
                             query = query
                                 .ilike('first_name', like)
@@ -1123,20 +1564,19 @@
                 query = query.range(from, to);
 
                 const { data, count, error } = await query;
-                if (error) {
-                    console.error('Query error:', error);
-                    throw error;
-                }
+                if (error) throw error;
                 return { data, total: count };
             }
 
-            // ---- Other CRUD functions (identical, but with 'level' added) ----
             async function getStats() {
-                const { count: total, error: e1 } = await supabase.from('students').select('*', { count: 'exact', head: true });
+                const { count: total, error: e1 } = await supabase.from('students').select('*', { count: 'exact',
+                    head: true });
                 if (e1) throw e1;
-                const { count: male, error: e2 } = await supabase.from('students').select('*', { count: 'exact', head: true }).eq('gender', 'Male');
+                const { count: male, error: e2 } = await supabase.from('students').select('*', { count: 'exact',
+                    head: true }).eq('gender', 'Male');
                 if (e2) throw e2;
-                const { count: female, error: e3 } = await supabase.from('students').select('*', { count: 'exact', head: true }).eq('gender', 'Female');
+                const { count: female, error: e3 } = await supabase.from('students').select('*', { count: 'exact',
+                    head: true }).eq('gender', 'Female');
                 if (e3) throw e3;
                 const sevenDaysAgo = new Date();
                 sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -1172,7 +1612,7 @@
                 if (!file) return null;
                 const fileExt = file.name.split('.').pop();
                 const fileName = `profile_${Date.now()}.${fileExt}`;
-                console.log(`📤 Uploading ${fileName} to bucket "${STORAGE_BUCKET}"...`);
+                console.log(`📤 Uploading ${fileName}...`);
                 try {
                     const { error: uploadError } = await supabase.storage
                         .from(STORAGE_BUCKET)
@@ -1269,18 +1709,25 @@
 
                     const recent = await getRecent();
                     if (recent && recent.length) {
-                        recentTableBody.innerHTML = recent.map(s => `
-                            <tr>
-                                <td><strong>${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}</strong></td>
-                                <td>${escapeHtml(s.reg_number || '—')}</td>
-                                <td>${escapeHtml(s.level || '—')}</td>
-                                <td>${escapeHtml(s.department)}</td>
-                                <td>${escapeHtml(s.email)}</td>
-                                <td>${formatDate(s.created_at)}</td>
-                            </tr>
-                        `).join('');
+                        recentContainer.innerHTML = recent.map(s => `
+                                <div class="student-card" style="cursor:default;border-radius:0;border-left:0;border-right:0;border-top:0;box-shadow:none;padding:0.5rem 1rem;gap:0.8rem;">
+                                    <div class="avatar-wrap">
+                                        ${s.profile_picture ? `<img src="${escapeHtml(s.profile_picture)}" class="avatar" style="width:40px;height:40px;" />` : `<div class="avatar-placeholder" style="width:40px;height:40px;font-size:0.8rem;">${escapeHtml(s.first_name.charAt(0))}${escapeHtml(s.last_name.charAt(0))}</div>`}
+                                    </div>
+                                    <div class="info">
+                                        <div class="name" style="font-size:0.85rem;">${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}</div>
+                                        <div class="details" style="font-size:0.65rem;">
+                                            <span><i class="fas fa-id-card"></i> ${escapeHtml(s.reg_number || '—')}</span>
+                                            <span><i class="fas fa-building"></i> ${escapeHtml(s.department)}</span>
+                                            <span><i class="fas fa-envelope"></i> ${escapeHtml(s.email)}</span>
+                                        </div>
+                                    </div>
+                                    <div style="font-size:0.6rem;color:var(--text-muted);white-space:nowrap;">${formatDate(s.created_at)}</div>
+                                </div>
+                            `).join('');
                     } else {
-                        recentTableBody.innerHTML = `<tr><td colspan="6" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No recent students</td></tr>`;
+                        recentContainer.innerHTML =
+                            `<div class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No recent students</div>`;
                     }
                 } catch (e) {
                     notify('Failed to load dashboard: ' + e.message, 'error');
@@ -1289,7 +1736,7 @@
             }
 
             // =============================================================
-            // STUDENTS LIST
+            // STUDENTS LIST (card-based)
             // =============================================================
             async function loadStudents() {
                 try {
@@ -1311,7 +1758,7 @@
                     state.departments = depts;
                     populateDeptFilter();
 
-                    renderTable();
+                    renderStudentCards();
                     renderPagination();
                 } catch (e) {
                     notify('Failed to load students: ' + e.message, 'error');
@@ -1319,42 +1766,45 @@
                 }
             }
 
-            function renderTable() {
+            function renderStudentCards() {
                 if (!state.students || !state.students.length) {
-                    studentTableBody.innerHTML = `<tr><td colspan="11" class="empty-state"><span class="icon"><i class="far fa-folder-open"></i></span>No students found</td></tr>`;
+                    studentGrid.innerHTML =
+                        `<div class="empty-state" style="grid-column:1/-1;"><span class="icon"><i class="far fa-folder-open"></i></span>No students found</div>`;
                     return;
                 }
-                studentTableBody.innerHTML = state.students.map((s, i) => {
-                    const idx = (state.currentPage - 1) * state.perPage + i + 1;
+
+                studentGrid.innerHTML = state.students.map((s) => {
                     const avatar = s.profile_picture ?
-                        `<img src="${escapeHtml(s.profile_picture)}" class="avatar" alt="photo" />` :
+                        `<img src="${escapeHtml(s.profile_picture)}" class="avatar" />` :
                         `<div class="avatar-placeholder">${escapeHtml(s.first_name.charAt(0))}${escapeHtml(s.last_name.charAt(0))}</div>`;
-                    const genderBadge = `<span class="badge ${(s.gender || '').toLowerCase()}">${escapeHtml(s.gender)}</span>`;
+                    const genderBadge =
+                        `<span class="badge ${(s.gender || '').toLowerCase()}">${escapeHtml(s.gender)}</span>`;
                     return `
-                        <tr class="clickable" data-id="${s.id}">
-                            <td>${idx}</td>
-                            <td>${avatar}</td>
-                            <td><strong>${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}</strong></td>
-                            <td>${escapeHtml(s.reg_number || '—')}</td>
-                            <td>${escapeHtml(s.level || '—')}</td>
-                            <td>${genderBadge}</td>
-                            <td>${s.age}</td>
-                            <td>${escapeHtml(s.department)}</td>
-                            <td>${escapeHtml(s.email)}</td>
-                            <td>${escapeHtml(s.phone || '—')}</td>
-                            <td>
+                            <div class="student-card" data-id="${s.id}">
+                                <div class="avatar-wrap">${avatar}</div>
+                                <div class="info">
+                                    <div class="name">${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)} ${genderBadge}</div>
+                                    <div class="details">
+                                        <span><i class="fas fa-id-card"></i> ${escapeHtml(s.reg_number || '—')}</span>
+                                        <span><i class="fas fa-graduation-cap"></i> ${escapeHtml(s.level || '—')}</span>
+                                        <span><i class="fas fa-building"></i> ${escapeHtml(s.department)}</span>
+                                        <span><i class="fas fa-envelope"></i> ${escapeHtml(s.email)}</span>
+                                        <span><i class="fas fa-phone"></i> ${escapeHtml(s.phone || '—')}</span>
+                                    </div>
+                                </div>
                                 <div class="actions">
                                     <button class="btn btn-primary btn-xs" onclick="event.stopPropagation();window.editStudent(${s.id})"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-danger btn-xs" onclick="event.stopPropagation();window.confirmDelete(${s.id}, '${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}')"><i class="fas fa-trash-alt"></i></button>
                                 </div>
-                            </td>
-                        </tr>
-                    `;
+                            </div>
+                        `;
                 }).join('');
 
-                // Add click handler for row to show profile
-                document.querySelectorAll('#studentTableBody tr.clickable').forEach(row => {
-                    row.addEventListener('click', function() {
+                // Click to show profile
+                document.querySelectorAll('.student-card').forEach(card => {
+                    card.addEventListener('click', function(e) {
+                        // Ignore if click was on a button
+                        if (e.target.closest('.actions') || e.target.closest('button')) return;
                         const id = parseInt(this.dataset.id);
                         const student = state.students.find(s => s.id === id);
                         if (student) showProfile(student);
@@ -1369,7 +1819,8 @@
                 paginationInfo.textContent = total ? `Showing ${start}–${end} of ${total}` : 'No records';
 
                 let html = '';
-                html += `<button onclick="window.goToPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''}>‹</button>`;
+                html +=
+                `<button onclick="window.goToPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''}>‹</button>`;
                 for (let i = 1; i <= totalPages; i++) {
                     if (i === currentPage) {
                         html += `<button class="active">${i}</button>`;
@@ -1381,7 +1832,8 @@
                         html += `<button disabled>…</button>`;
                     }
                 }
-                html += `<button onclick="window.goToPage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''}>›</button>`;
+                html +=
+                `<button onclick="window.goToPage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''}>›</button>`;
                 paginationControls.innerHTML = html;
             }
 
@@ -1433,21 +1885,30 @@
             }
 
             // =============================================================
-            // SORTING
+            // SORTING (via click on field – we use the sort-btn in table, but here we just default to name sort)
             // =============================================================
-            document.addEventListener('click', (e) => {
-                const btn = e.target.closest('.sort-btn');
-                if (!btn) return;
-                const field = btn.dataset.sort;
-                if (state.sortField === field) {
+            // We keep the sort functionality via the table header, but since we're using cards,
+            // we'll use a simple toggle: click on "Students" header to toggle sort.
+            // For simplicity, we keep the sortBtn event listener from original.
+            // We'll also add a small sort toggle in the UI.
+
+            // Add sort toggle in the students page header
+            const studentsHeader = document.querySelector('#viewStudents .page-header h1');
+            if (studentsHeader) {
+                const sortLabel = document.createElement('span');
+                sortLabel.style.cssText =
+                    'font-size:0.55rem;font-weight:400;color:var(--text-muted);margin-left:0.5rem;cursor:pointer;';
+                sortLabel.innerHTML = '<i class="fas fa-sort"></i> Sort';
+                sortLabel.title = 'Toggle sort order (Name)';
+                sortLabel.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
-                } else {
-                    state.sortField = field;
-                    state.sortDir = 'asc';
-                }
-                state.currentPage = 1;
-                loadStudents();
-            });
+                    state.currentPage = 1;
+                    loadStudents();
+                    notify(`Sorted ${state.sortDir === 'asc' ? 'A→Z' : 'Z→A'}`, 'success');
+                });
+                studentsHeader.appendChild(sortLabel);
+            }
 
             // =============================================================
             // FORM MODAL
@@ -1469,7 +1930,8 @@
                     formPhone.value = data.phone || '';
                     formAddress.value = data.address || '';
                     if (data.profile_picture) {
-                        formPicturePreview.innerHTML = `<img src="${escapeHtml(data.profile_picture)}" class="preview-img" alt="preview" />`;
+                        formPicturePreview.innerHTML =
+                            `<img src="${escapeHtml(data.profile_picture)}" class="preview-img" alt="preview" />`;
                     } else {
                         formPicturePreview.innerHTML = '';
                     }
@@ -1495,13 +1957,23 @@
             });
 
             btnAddStudent.addEventListener('click', () => openFormModal());
+            fabAdd.addEventListener('click', () => {
+                // If we're not on students page, navigate there first
+                if (viewStudents.style.display === 'none') {
+                    navigateTo('students');
+                    setTimeout(() => openFormModal(), 300);
+                } else {
+                    openFormModal();
+                }
+            });
 
             formPicture.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = (ev) => {
-                        formPicturePreview.innerHTML = `<img src="${ev.target.result}" class="preview-img" alt="preview" />`;
+                        formPicturePreview.innerHTML =
+                            `<img src="${ev.target.result}" class="preview-img" alt="preview" />`;
                     };
                     reader.readAsDataURL(file);
                 } else {
@@ -1633,7 +2105,7 @@
             // REFRESH
             // =============================================================
             btnRefresh.addEventListener('click', () => {
-                const active = document.querySelector('.sidebar-nav a.active');
+                const active = bottomNav.querySelector('.nav-item.active');
                 if (active) navigateTo(active.dataset.page);
                 else navigateTo('dashboard');
                 notify('Refreshed ✅', 'success');
@@ -1657,14 +2129,15 @@
 
             function debounce(fn, ms) {
                 let timer;
-                return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); };
+                return (...args) => { clearTimeout(timer);
+                    timer = setTimeout(() => fn(...args), ms); };
             }
 
             // =============================================================
             // INIT
             // =============================================================
             (async function init() {
-                console.log('🚀 Starting StudentHub...');
+                console.log('🚀 Starting StudentHub (bottom nav UI)...');
                 try {
                     const { error } = await supabase.from('students').select('*', { count: 'exact', head: true });
                     if (error) {
