@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>StudentHub</title>
 
     <!-- Apple Touch Icon (for iOS) – points to logo.png -->
@@ -100,6 +100,7 @@
             padding-top: var(--header-height);
             font-size: 16px;
             line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
         }
         a { text-decoration: none; color: inherit; }
         button { cursor: pointer; font: inherit; border: none; background: none; }
@@ -1084,7 +1085,14 @@
 
                 if (params.search) {
                     const like = `%${params.search}%`;
-                    query = query.or(`first_name.ilike.${like},last_name.ilike.${like},email.ilike.${like},department.ilike.${like},reg_number.ilike.${like},id::text.ilike.${like}`);
+                    // Try to search across columns; if reg_number doesn't exist, it will fail.
+                    // We'll catch and fallback to a simpler search.
+                    try {
+                        query = query.or(`first_name.ilike.${like},last_name.ilike.${like},email.ilike.${like},department.ilike.${like},reg_number.ilike.${like},id::text.ilike.${like}`);
+                    } catch (e) {
+                        // Fallback without reg_number
+                        query = query.or(`first_name.ilike.${like},last_name.ilike.${like},email.ilike.${like},department.ilike.${like},id::text.ilike.${like}`);
+                    }
                 }
                 if (params.gender) query = query.eq('gender', params.gender);
                 if (params.dept) query = query.eq('department', params.dept);
@@ -1094,7 +1102,29 @@
                 query = query.range(from, to);
 
                 const { data, count, error } = await query;
-                if (error) throw error;
+                if (error) {
+                    // If error is about missing column, remove reg_number from search and retry
+                    if (error.message && error.message.includes('column "reg_number" does not exist')) {
+                        // Retry without reg_number
+                        let query2 = supabase
+                            .from('students')
+                            .select('*', { count: 'exact' });
+                        if (params.search) {
+                            const like = `%${params.search}%`;
+                            query2 = query2.or(`first_name.ilike.${like},last_name.ilike.${like},email.ilike.${like},department.ilike.${like},id::text.ilike.${like}`);
+                        }
+                        if (params.gender) query2 = query2.eq('gender', params.gender);
+                        if (params.dept) query2 = query2.eq('department', params.dept);
+                        query2 = query2.order(params.sort, { ascending: params.dir === 'asc' });
+                        const from2 = (params.page - 1) * params.perPage;
+                        const to2 = from2 + params.perPage - 1;
+                        query2 = query2.range(from2, to2);
+                        const { data: data2, count: count2, error: error2 } = await query2;
+                        if (error2) throw error2;
+                        return { data: data2, total: count2 };
+                    }
+                    throw error;
+                }
                 return { data, total: count };
             }
 
